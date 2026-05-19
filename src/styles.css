@@ -102,21 +102,9 @@
   text-shadow: 0 0 20px rgba(255, 212, 0, 0.5);
 }
 
-@utility grain {
-  position: relative;
-}
-@utility grain::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: var(--grain);
-  opacity: 0.06;
-  pointer-events: none;
-  mix-blend-mode: overlay;
-}
-
 @utility display {
   font-weight: 900;
   letter-spacing: -0.04em;
   line-height: 0.85;
 }
+

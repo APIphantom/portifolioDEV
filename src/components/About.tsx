@@ -14,7 +14,7 @@ export function About() {
       <div className="mx-auto max-w-7xl grid lg:grid-cols-12 gap-12">
         <div className="lg:col-span-5">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 1, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
@@ -32,7 +32,7 @@ export function About() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 1 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
@@ -51,7 +51,7 @@ export function About() {
 
         <div className="lg:col-span-7 space-y-8">
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 1, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-xl md:text-2xl text-muted-foreground leading-relaxed"
@@ -65,7 +65,7 @@ export function About() {
             {cards.map((c, i) => (
               <motion.div
                 key={c.title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 1, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 * i }}

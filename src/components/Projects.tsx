@@ -23,7 +23,7 @@ export function Projects({ projects }: { projects: Project[] }) {
           {projects.map((p, i) => (
             <motion.article
               key={p.id}
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 1, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ delay: (i % 3) * 0.1 }}

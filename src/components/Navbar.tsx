@@ -24,7 +24,7 @@ export function Navbar() {
   return (
     <>
       <motion.header
-        initial={{ y: -40, opacity: 0 }}
+        initial={{ y: -40, opacity: 1 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
@@ -67,9 +67,9 @@ export function Navbar() {
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            exit={{ opacity: 1 }}
             className="fixed inset-0 z-[60] md:hidden"
           >
             <div className="absolute inset-0 bg-background/80 backdrop-blur-xl" onClick={() => setOpen(false)} />
@@ -90,7 +90,7 @@ export function Navbar() {
                     key={l.href}
                     href={l.href}
                     onClick={() => setOpen(false)}
-                    initial={{ x: 30, opacity: 0 }}
+                    initial={{ x: 30, opacity: 1 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.05 * i }}
                     className="text-4xl font-black tracking-tighter py-3 border-b border-border hover:text-primary transition-colors"
