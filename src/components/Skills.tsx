@@ -32,7 +32,7 @@ export function Skills() {
           {skills.map((s, i) => (
             <motion.div
               key={s.name}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 1, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ delay: i * 0.05 }}
