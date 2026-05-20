@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, Github, ExternalLink, ImageIcon } from "lucide-react";
 import { readProjects, type Project, CATEGORIES } from "@/lib/projects-store";
