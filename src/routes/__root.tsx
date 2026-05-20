@@ -7,8 +7,12 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { Toaster } from "sonner";
+import { Loader } from "@/components/Loader";
+import { CustomCursor } from "@/components/CustomCursor";
 
 import appCss from "../styles.css?url";
+
 
 function NotFoundComponent() {
   return (
@@ -112,7 +116,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <Loader />
+      <CustomCursor />
       <Outlet />
+      <Toaster theme="dark" position="bottom-center" toastOptions={{ style: { background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" } }} />
     </QueryClientProvider>
   );
 }
+

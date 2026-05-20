@@ -1,13 +1,17 @@
 import { motion } from "framer-motion";
 import { ArrowDown, Download, Mail } from "lucide-react";
+import { MagneticButton } from "./MagneticButton";
+
+const TITLE_TOP = "STREET".split("");
+const TITLE_BOT = "CODE".split("");
 
 export function Hero() {
   return (
-    <section id="home" className="relative min-h-screen overflow-hidden flex items-center pt-24 pb-16">
-      {/* Backdrop */}
+    <section id="home" className="relative min-h-screen overflow-hidden flex items-center pt-24 pb-24">
       <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,212,0,0.12),transparent_55%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(transparent_95%,rgba(255,255,255,0.04)_95%),linear-gradient(90deg,transparent_95%,rgba(255,255,255,0.04)_95%)] bg-[size:64px_64px]" />
+        <div className="absolute inset-0 grid-bg" />
+        <div className="absolute inset-0 scanlines opacity-50" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(var(--glow-color),0.15),transparent_55%)]" />
         <motion.div
           aria-hidden
           initial={{ rotate: 0 }}
@@ -18,13 +22,18 @@ export function Hero() {
           <div className="absolute inset-10 rounded-full border border-primary/10" />
           <div className="absolute inset-24 rounded-full border border-primary/5" />
         </motion.div>
-        <div className="absolute -left-32 bottom-10 w-[400px] h-[400px] rounded-full bg-primary/10 blur-[120px]" />
+        <motion.div
+          aria-hidden
+          animate={{ opacity: [0.35, 0.65, 0.35] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -left-32 bottom-10 w-[420px] h-[420px] rounded-full bg-primary/20 blur-[130px]"
+        />
       </div>
 
       <div className="mx-auto max-w-7xl w-full px-6 lg:px-10 grid lg:grid-cols-12 gap-10 items-end">
         <div className="lg:col-span-8">
           <motion.div
-            initial={{ opacity: 1, y: 20 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="flex items-center gap-3 mb-8"
@@ -35,22 +44,47 @@ export function Hero() {
             </span>
           </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 1, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="display text-[clamp(3.5rem,12vw,11rem)] leading-[0.82]"
-          >
-            STREET
-            <br />
-            <span className="text-primary text-glow">CODE</span>
-            <span className="inline-block align-top text-primary text-glow">.</span>
-          </motion.h1>
+          <h1 className="display text-[clamp(3.5rem,12vw,11rem)] leading-[0.82] overflow-hidden">
+            <span className="block">
+              {TITLE_TOP.map((l, i) => (
+                <motion.span
+                  key={`t-${i}`}
+                  initial={{ y: "110%", opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.7, delay: 0.1 + i * 0.05, ease: [0.65, 0, 0.35, 1] }}
+                  className="inline-block"
+                >
+                  {l}
+                </motion.span>
+              ))}
+            </span>
+            <span className="block text-primary text-glow">
+              {TITLE_BOT.map((l, i) => (
+                <motion.span
+                  key={`b-${i}`}
+                  initial={{ y: "110%", opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.7, delay: 0.45 + i * 0.05, ease: [0.65, 0, 0.35, 1] }}
+                  className="inline-block"
+                >
+                  {l}
+                </motion.span>
+              ))}
+              <motion.span
+                initial={{ y: "110%", opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.7, delay: 0.75 }}
+                className="inline-block"
+              >
+                .
+              </motion.span>
+            </span>
+          </h1>
 
           <motion.p
-            initial={{ opacity: 1, y: 20 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            transition={{ duration: 0.6, delay: 0.9 }}
             className="mt-8 max-w-xl text-base md:text-lg text-muted-foreground"
           >
             <span className="text-foreground font-medium">Front-End Developer.</span> Construindo
@@ -59,26 +93,28 @@ export function Hero() {
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 1, y: 20 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.55 }}
+            transition={{ duration: 0.6, delay: 1.05 }}
             className="mt-10 flex flex-wrap gap-3"
           >
-            <a
-              href="#projetos"
+            <MagneticButton
+              onClick={() => document.getElementById("projetos")?.scrollIntoView({ behavior: "smooth" })}
               className="group inline-flex items-center gap-2 px-6 py-4 bg-primary text-primary-foreground rounded-full font-bold uppercase tracking-widest text-xs hover:glow-neon transition-all"
             >
               Ver Projetos
               <ArrowDown className="size-4 group-hover:translate-y-0.5 transition-transform" />
-            </a>
+            </MagneticButton>
             <a
               href="#"
+              data-cursor="hover"
               className="inline-flex items-center gap-2 px-6 py-4 border border-border rounded-full font-bold uppercase tracking-widest text-xs hover:border-primary hover:text-primary transition-colors"
             >
               <Download className="size-4" /> Download CV
             </a>
             <a
               href="#contato"
+              data-cursor="hover"
               className="inline-flex items-center gap-2 px-6 py-4 rounded-full font-bold uppercase tracking-widest text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               <Mail className="size-4" /> Contato
@@ -87,9 +123,9 @@ export function Hero() {
         </div>
 
         <motion.div
-          initial={{ opacity: 1, x: 30 }}
+          initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          transition={{ duration: 0.8, delay: 1.1 }}
           className="lg:col-span-4 space-y-4 text-xs uppercase tracking-widest"
         >
           <div className="border-l-2 border-primary pl-4">
@@ -112,7 +148,6 @@ export function Hero() {
         </motion.div>
       </div>
 
-      {/* Marquee */}
       <div className="absolute bottom-0 left-0 right-0 border-y border-border bg-background/40 backdrop-blur-sm overflow-hidden">
         <div className="flex animate-marquee whitespace-nowrap py-3">
           {Array.from({ length: 2 }).flatMap((_, k) =>
