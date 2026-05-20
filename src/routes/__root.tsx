@@ -7,8 +7,12 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { Toaster } from "sonner";
+import { Loader } from "@/components/Loader";
+import { CustomCursor } from "@/components/CustomCursor";
 
 import appCss from "../styles.css?url";
+
 
 function NotFoundComponent() {
   return (
