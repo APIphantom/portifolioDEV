@@ -1,28 +1,38 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Settings, X, Plus, Pencil, Trash2, UploadCloud } from "lucide-react";
-import type { Project } from "@/lib/projects-store";
+import { CATEGORIES, type Project, type ProjectCategory, slugify } from "@/lib/projects-store";
+
+type FormData = Omit<Project, "id">;
 
 type Props = {
   projects: Project[];
-  onAdd: (p: Omit<Project, "id">) => void;
+  onAdd: (p: Omit<Project, "id" | "slug"> & { slug?: string }) => void;
   onUpdate: (id: string, patch: Partial<Project>) => void;
   onRemove: (id: string) => void;
 };
 
-const empty: Omit<Project, "id"> = {
+const empty: FormData = {
+  slug: "",
   title: "",
   description: "",
+  longDescription: "",
   image: "",
   tech: [],
+  category: "web",
   github: "",
   demo: "",
+  objective: "",
+  problem: "",
+  solution: "",
+  process: "",
+  result: "",
 };
 
 export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<Omit<Project, "id">>(empty);
+  const [form, setForm] = useState<FormData>(empty);
   const [techInput, setTechInput] = useState("");
   const [drag, setDrag] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -45,7 +55,8 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
       .split(",")
       .map((t) => t.trim())
       .filter(Boolean);
-    const payload = { ...form, tech: tech.length ? tech : form.tech };
+    const slug = form.slug || slugify(form.title);
+    const payload = { ...form, tech: tech.length ? tech : form.tech, slug };
     if (editingId) onUpdate(editingId, payload);
     else onAdd(payload);
     reset();
@@ -54,12 +65,20 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
   const startEdit = (p: Project) => {
     setEditingId(p.id);
     setForm({
+      slug: p.slug,
       title: p.title,
       description: p.description,
+      longDescription: p.longDescription ?? "",
       image: p.image,
       tech: p.tech,
+      category: p.category,
       github: p.github ?? "",
       demo: p.demo ?? "",
+      objective: p.objective ?? "",
+      problem: p.problem ?? "",
+      solution: p.solution ?? "",
+      process: p.process ?? "",
+      result: p.result ?? "",
     });
     setTechInput(p.tech.join(", "));
   };
@@ -67,13 +86,18 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
   return (
     <>
       <motion.button
-        whileHover={{ scale: 1.05 }}
+        initial={{ opacity: 0, scale: 0.6 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1.4, type: "spring", damping: 14 }}
+        whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setOpen(true)}
-        aria-label="Open admin"
-        className="fixed bottom-6 right-6 z-40 size-14 rounded-full bg-primary text-primary-foreground shadow-[0_0_30px_rgba(255,212,0,0.4)] flex items-center justify-center"
+        aria-label="Abrir admin"
+        data-cursor="hover"
+        className="fixed bottom-6 right-6 z-40 size-14 rounded-full bg-primary text-primary-foreground glow-neon flex items-center justify-center"
       >
-        <Settings className="size-6" />
+        <Settings className="size-6 animate-[spin_8s_linear_infinite]" />
+        <span className="absolute -top-1 -right-1 size-3 rounded-full bg-primary animate-ping" />
       </motion.button>
 
       <AnimatePresence>
@@ -90,7 +114,7 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.95, y: 20, opacity: 0 }}
               transition={{ type: "spring", damping: 24, stiffness: 220 }}
-              className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl border border-border bg-card"
+              className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl border border-border bg-card/80 backdrop-blur-2xl"
             >
               <div className="sticky top-0 z-10 flex items-center justify-between p-6 border-b border-border bg-card/95 backdrop-blur">
                 <div>
@@ -102,14 +126,12 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
                 </button>
               </div>
 
-              <div className="p-6 grid md:grid-cols-2 gap-8">
-                {/* Form */}
+              <div className="p-6 grid lg:grid-cols-2 gap-8">
                 <form onSubmit={submit} className="space-y-4">
                   <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
                     {editingId ? "Editando Drop" : "Novo Drop"}
                   </div>
 
-                  {/* Image dropzone */}
                   <div
                     onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
                     onDragLeave={() => setDrag(false)}
@@ -121,7 +143,7 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
                     }}
                     onClick={() => fileRef.current?.click()}
                     className={`relative aspect-video rounded-2xl border-2 border-dashed cursor-pointer transition-all overflow-hidden ${
-                      drag ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                      drag ? "border-primary bg-primary/5 glow-neon" : "border-border hover:border-primary/50"
                     }`}
                   >
                     {form.image ? (
@@ -141,13 +163,38 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
                     />
                   </div>
 
-                  <Input label="Título" value={form.title} onChange={(v) => setForm({ ...form, title: v })} required />
-                  <TextArea label="Descrição" value={form.description} onChange={(v) => setForm({ ...form, description: v })} required />
-                  <Input label="Tecnologias (separe por vírgula)" value={techInput} onChange={setTechInput} placeholder="React, Tailwind" />
-                  <Input label="Link GitHub" value={form.github ?? ""} onChange={(v) => setForm({ ...form, github: v })} placeholder="https://github.com/..." />
-                  <Input label="Link Demo" value={form.demo ?? ""} onChange={(v) => setForm({ ...form, demo: v })} placeholder="https://..." />
+                  <Input label="Título" value={form.title} onChange={(v) => setForm({ ...form, title: v, slug: form.slug || slugify(v) })} required />
+                  <Input label="Slug (URL)" value={form.slug} onChange={(v) => setForm({ ...form, slug: slugify(v) })} placeholder="meu-projeto" />
 
-                  <div className="flex gap-2">
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5">Categoria</label>
+                    <select
+                      value={form.category}
+                      onChange={(e) => setForm({ ...form, category: e.target.value as ProjectCategory })}
+                      className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:border-primary outline-none"
+                    >
+                      {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+                    </select>
+                  </div>
+
+                  <TextArea label="Descrição curta" value={form.description} onChange={(v) => setForm({ ...form, description: v })} required />
+                  <TextArea label="Descrição completa" value={form.longDescription ?? ""} onChange={(v) => setForm({ ...form, longDescription: v })} />
+                  <Input label="Tecnologias (vírgula)" value={techInput} onChange={setTechInput} placeholder="React, Tailwind" />
+                  <Input label="GitHub" value={form.github ?? ""} onChange={(v) => setForm({ ...form, github: v })} placeholder="https://github.com/..." />
+                  <Input label="Demo" value={form.demo ?? ""} onChange={(v) => setForm({ ...form, demo: v })} placeholder="https://..." />
+
+                  <div className="border-t border-border pt-4">
+                    <div className="text-[10px] uppercase tracking-widest text-primary mb-3">Case Study</div>
+                    <div className="space-y-3">
+                      <TextArea label="Objetivo" value={form.objective ?? ""} onChange={(v) => setForm({ ...form, objective: v })} />
+                      <TextArea label="Problema" value={form.problem ?? ""} onChange={(v) => setForm({ ...form, problem: v })} />
+                      <TextArea label="Solução" value={form.solution ?? ""} onChange={(v) => setForm({ ...form, solution: v })} />
+                      <TextArea label="Processo" value={form.process ?? ""} onChange={(v) => setForm({ ...form, process: v })} />
+                      <TextArea label="Resultado" value={form.result ?? ""} onChange={(v) => setForm({ ...form, result: v })} />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 sticky bottom-0 bg-card/95 backdrop-blur py-3">
                     <button
                       type="submit"
                       className="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-full bg-primary text-primary-foreground font-bold uppercase tracking-widest text-xs hover:glow-neon transition-shadow"
@@ -162,12 +209,11 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
                   </div>
                 </form>
 
-                {/* List */}
                 <div className="space-y-2">
                   <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
                     Drops ({projects.length})
                   </div>
-                  <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
+                  <div className="space-y-2 max-h-[700px] overflow-y-auto pr-1">
                     {projects.map((p) => (
                       <div key={p.id} className="flex gap-3 p-3 rounded-xl border border-border hover:border-primary/40 transition-colors">
                         <div className="size-14 shrink-0 rounded-lg overflow-hidden bg-muted">
@@ -181,6 +227,7 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-bold truncate">{p.title}</div>
+                          <div className="text-[10px] uppercase tracking-widest text-primary truncate">/{p.slug}</div>
                           <div className="text-xs text-muted-foreground truncate">{p.tech.join(" · ")}</div>
                         </div>
                         <div className="flex gap-1">
