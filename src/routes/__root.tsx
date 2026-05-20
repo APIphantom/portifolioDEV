@@ -99,6 +99,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <div className="grain" aria-hidden="true" />
         {children}
         <Scripts />
       </body>
@@ -112,7 +113,6 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
-      <div className="grain" aria-hidden="true" />
     </QueryClientProvider>
   );
 }
