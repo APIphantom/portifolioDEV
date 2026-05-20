@@ -108,3 +108,14 @@
   line-height: 0.85;
 }
 
+@utility grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: var(--grain);
+  background-repeat: repeat;
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+}
+

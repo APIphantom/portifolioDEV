@@ -112,6 +112,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <div className="grain" aria-hidden="true" />
     </QueryClientProvider>
   );
 }
