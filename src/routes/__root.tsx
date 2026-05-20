@@ -116,7 +116,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <Loader />
+      <CustomCursor />
       <Outlet />
+      <Toaster theme="dark" position="bottom-center" toastOptions={{ style: { background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" } }} />
     </QueryClientProvider>
   );
 }
+
