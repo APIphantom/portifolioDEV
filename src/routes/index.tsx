@@ -8,7 +8,8 @@ import { Projects } from "@/components/Projects";
 import { Vision } from "@/components/Vision";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
-import { AdminPanel } from "@/components/AdminPanel";
+import { Link } from "@tanstack/react-router";
+import { Settings } from "lucide-react";
 import { useProjects } from "@/lib/projects-store";
 
 export const Route = createFileRoute("/")({
@@ -38,7 +39,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { projects, addProject, updateProject, removeProject } = useProjects();
+  const { projects } = useProjects();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -53,12 +54,14 @@ function Index() {
         <Contact />
       </main>
       <Footer />
-      <AdminPanel
-        projects={projects}
-        onAdd={addProject}
-        onUpdate={updateProject}
-        onRemove={removeProject}
-      />
+      <Link
+        to="/admin"
+        data-cursor="hover"
+        aria-label="Abrir CMS"
+        className="fixed bottom-6 right-6 z-40 size-14 rounded-full bg-primary text-primary-foreground glow-neon flex items-center justify-center hover:scale-105 transition-transform"
+      >
+        <Settings className="size-6 animate-[spin_8s_linear_infinite]" />
+      </Link>
     </div>
   );
 }

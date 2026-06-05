@@ -10,13 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProjetoSlugRouteImport } from './routes/projeto.$slug'
-import { Route as AdminTecnologiasRouteImport } from './routes/admin.tecnologias'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminProjetosRouteImport } from './routes/admin.projetos'
 import { Route as AdminMidiasRouteImport } from './routes/admin.midias'
+import { Route as AdminTecnologiasRouteImport } from './routes/admin.tecnologias'
 import { Route as AdminGithubRouteImport } from './routes/admin.github'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configuracoes'
 
@@ -25,29 +25,24 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
 } as any)
 const ProjetoSlugRoute = ProjetoSlugRouteImport.update({
   id: '/projeto/$slug',
   path: '/projeto/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminTecnologiasRoute = AdminTecnologiasRouteImport.update({
-  id: '/tecnologias',
-  path: '/tecnologias',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminProjetosRoute = AdminProjetosRouteImport.update({
@@ -58,6 +53,11 @@ const AdminProjetosRoute = AdminProjetosRouteImport.update({
 const AdminMidiasRoute = AdminMidiasRouteImport.update({
   id: '/midias',
   path: '/midias',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTecnologiasRoute = AdminTecnologiasRouteImport.update({
+  id: '/tecnologias',
+  path: '/tecnologias',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminGithubRoute = AdminGithubRouteImport.update({
@@ -73,83 +73,102 @@ const AdminConfiguracoesRoute = AdminConfiguracoesRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/admin/configuracoes': typeof AdminConfiguracoesRoute
-  '/admin/github': typeof AdminGithubRoute
-  '/admin/midias': typeof AdminMidiasRoute
-  '/admin/projetos': typeof AdminProjetosRoute
-  '/admin/tecnologias': typeof AdminTecnologiasRoute
   '/projeto/$slug': typeof ProjetoSlugRoute
+  '/admin': typeof AdminRouteWithChildren
   '/admin/': typeof AdminIndexRoute
+  '/admin/projetos': typeof AdminProjetosRoute
+  '/admin/midias': typeof AdminMidiasRoute
+  '/admin/tecnologias': typeof AdminTecnologiasRoute
+  '/admin/github': typeof AdminGithubRoute
+  '/admin/configuracoes': typeof AdminConfiguracoesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/admin/configuracoes': typeof AdminConfiguracoesRoute
-  '/admin/github': typeof AdminGithubRoute
-  '/admin/midias': typeof AdminMidiasRoute
-  '/admin/projetos': typeof AdminProjetosRoute
-  '/admin/tecnologias': typeof AdminTecnologiasRoute
   '/projeto/$slug': typeof ProjetoSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/projetos': typeof AdminProjetosRoute
+  '/admin/midias': typeof AdminMidiasRoute
+  '/admin/tecnologias': typeof AdminTecnologiasRoute
+  '/admin/github': typeof AdminGithubRoute
+  '/admin/configuracoes': typeof AdminConfiguracoesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/admin/configuracoes': typeof AdminConfiguracoesRoute
-  '/admin/github': typeof AdminGithubRoute
-  '/admin/midias': typeof AdminMidiasRoute
-  '/admin/projetos': typeof AdminProjetosRoute
-  '/admin/tecnologias': typeof AdminTecnologiasRoute
   '/projeto/$slug': typeof ProjetoSlugRoute
+  '/admin': typeof AdminRouteWithChildren
   '/admin/': typeof AdminIndexRoute
+  '/admin/projetos': typeof AdminProjetosRoute
+  '/admin/midias': typeof AdminMidiasRoute
+  '/admin/tecnologias': typeof AdminTecnologiasRoute
+  '/admin/github': typeof AdminGithubRoute
+  '/admin/configuracoes': typeof AdminConfiguracoesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/sitemap.xml'
-    | '/admin/configuracoes'
-    | '/admin/github'
-    | '/admin/midias'
-    | '/admin/projetos'
-    | '/admin/tecnologias'
     | '/projeto/$slug'
+    | '/admin'
     | '/admin/'
+    | '/admin/projetos'
+    | '/admin/midias'
+    | '/admin/tecnologias'
+    | '/admin/github'
+    | '/admin/configuracoes'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/sitemap.xml'
-    | '/admin/configuracoes'
-    | '/admin/github'
-    | '/admin/midias'
-    | '/admin/projetos'
-    | '/admin/tecnologias'
     | '/projeto/$slug'
     | '/admin'
+    | '/admin/projetos'
+    | '/admin/midias'
+    | '/admin/tecnologias'
+    | '/admin/github'
+    | '/admin/configuracoes'
   id:
     | '__root__'
     | '/'
-    | '/admin'
     | '/sitemap.xml'
-    | '/admin/configuracoes'
-    | '/admin/github'
-    | '/admin/midias'
-    | '/admin/projetos'
-    | '/admin/tecnologias'
     | '/projeto/$slug'
+    | '/admin'
     | '/admin/'
+    | '/admin/projetos'
+    | '/admin/midias'
+    | '/admin/tecnologias'
+    | '/admin/github'
+    | '/admin/configuracoes'
   fileRoutesById: FileRoutesById
 }
+
+interface AdminRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminProjetosRoute: typeof AdminProjetosRoute
+  AdminMidiasRoute: typeof AdminMidiasRoute
+  AdminTecnologiasRoute: typeof AdminTecnologiasRoute
+  AdminGithubRoute: typeof AdminGithubRoute
+  AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
+}
+const adminRouteChildren: AdminRouteChildren = {
+  AdminIndexRoute,
+  AdminProjetosRoute,
+  AdminMidiasRoute,
+  AdminTecnologiasRoute,
+  AdminGithubRoute,
+  AdminConfiguracoesRoute,
+}
+const AdminRouteWithChildren = AdminRoute._addFileChildren(adminRouteChildren)
+
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ProjetoSlugRoute: typeof ProjetoSlugRoute
+  AdminRoute: typeof AdminRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -161,26 +180,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
     }
     '/projeto/$slug': {
       id: '/projeto/$slug'
@@ -189,11 +194,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjetoSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/tecnologias': {
-      id: '/admin/tecnologias'
-      path: '/tecnologias'
-      fullPath: '/admin/tecnologias'
-      preLoaderRoute: typeof AdminTecnologiasRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/projetos': {
@@ -208,6 +220,13 @@ declare module '@tanstack/react-router' {
       path: '/midias'
       fullPath: '/admin/midias'
       preLoaderRoute: typeof AdminMidiasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/tecnologias': {
+      id: '/admin/tecnologias'
+      path: '/tecnologias'
+      fullPath: '/admin/tecnologias'
+      preLoaderRoute: typeof AdminTecnologiasRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/github': {
@@ -227,31 +246,11 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AdminRouteChildren {
-  AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
-  AdminGithubRoute: typeof AdminGithubRoute
-  AdminMidiasRoute: typeof AdminMidiasRoute
-  AdminProjetosRoute: typeof AdminProjetosRoute
-  AdminTecnologiasRoute: typeof AdminTecnologiasRoute
-  AdminIndexRoute: typeof AdminIndexRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminConfiguracoesRoute: AdminConfiguracoesRoute,
-  AdminGithubRoute: AdminGithubRoute,
-  AdminMidiasRoute: AdminMidiasRoute,
-  AdminProjetosRoute: AdminProjetosRoute,
-  AdminTecnologiasRoute: AdminTecnologiasRoute,
-  AdminIndexRoute: AdminIndexRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ProjetoSlugRoute: ProjetoSlugRoute,
+  AdminRoute: AdminRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
