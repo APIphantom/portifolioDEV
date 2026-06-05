@@ -14,7 +14,11 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProjetoSlugRouteImport } from './routes/projeto.$slug'
+import { Route as AdminTecnologiasRouteImport } from './routes/admin.tecnologias'
 import { Route as AdminProjetosRouteImport } from './routes/admin.projetos'
+import { Route as AdminMidiasRouteImport } from './routes/admin.midias'
+import { Route as AdminGithubRouteImport } from './routes/admin.github'
+import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configuracoes'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -41,9 +45,29 @@ const ProjetoSlugRoute = ProjetoSlugRouteImport.update({
   path: '/projeto/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminTecnologiasRoute = AdminTecnologiasRouteImport.update({
+  id: '/tecnologias',
+  path: '/tecnologias',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminProjetosRoute = AdminProjetosRouteImport.update({
   id: '/projetos',
   path: '/projetos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMidiasRoute = AdminMidiasRouteImport.update({
+  id: '/midias',
+  path: '/midias',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminGithubRoute = AdminGithubRouteImport.update({
+  id: '/github',
+  path: '/github',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminConfiguracoesRoute = AdminConfiguracoesRouteImport.update({
+  id: '/configuracoes',
+  path: '/configuracoes',
   getParentRoute: () => AdminRoute,
 } as any)
 
@@ -51,14 +75,22 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/configuracoes': typeof AdminConfiguracoesRoute
+  '/admin/github': typeof AdminGithubRoute
+  '/admin/midias': typeof AdminMidiasRoute
   '/admin/projetos': typeof AdminProjetosRoute
+  '/admin/tecnologias': typeof AdminTecnologiasRoute
   '/projeto/$slug': typeof ProjetoSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/configuracoes': typeof AdminConfiguracoesRoute
+  '/admin/github': typeof AdminGithubRoute
+  '/admin/midias': typeof AdminMidiasRoute
   '/admin/projetos': typeof AdminProjetosRoute
+  '/admin/tecnologias': typeof AdminTecnologiasRoute
   '/projeto/$slug': typeof ProjetoSlugRoute
   '/admin': typeof AdminIndexRoute
 }
@@ -67,7 +99,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/configuracoes': typeof AdminConfiguracoesRoute
+  '/admin/github': typeof AdminGithubRoute
+  '/admin/midias': typeof AdminMidiasRoute
   '/admin/projetos': typeof AdminProjetosRoute
+  '/admin/tecnologias': typeof AdminTecnologiasRoute
   '/projeto/$slug': typeof ProjetoSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -77,17 +113,34 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/sitemap.xml'
+    | '/admin/configuracoes'
+    | '/admin/github'
+    | '/admin/midias'
     | '/admin/projetos'
+    | '/admin/tecnologias'
     | '/projeto/$slug'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sitemap.xml' | '/admin/projetos' | '/projeto/$slug' | '/admin'
+  to:
+    | '/'
+    | '/sitemap.xml'
+    | '/admin/configuracoes'
+    | '/admin/github'
+    | '/admin/midias'
+    | '/admin/projetos'
+    | '/admin/tecnologias'
+    | '/projeto/$slug'
+    | '/admin'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/sitemap.xml'
+    | '/admin/configuracoes'
+    | '/admin/github'
+    | '/admin/midias'
     | '/admin/projetos'
+    | '/admin/tecnologias'
     | '/projeto/$slug'
     | '/admin/'
   fileRoutesById: FileRoutesById
@@ -136,6 +189,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjetoSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/tecnologias': {
+      id: '/admin/tecnologias'
+      path: '/tecnologias'
+      fullPath: '/admin/tecnologias'
+      preLoaderRoute: typeof AdminTecnologiasRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/projetos': {
       id: '/admin/projetos'
       path: '/projetos'
@@ -143,16 +203,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProjetosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/midias': {
+      id: '/admin/midias'
+      path: '/midias'
+      fullPath: '/admin/midias'
+      preLoaderRoute: typeof AdminMidiasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/github': {
+      id: '/admin/github'
+      path: '/github'
+      fullPath: '/admin/github'
+      preLoaderRoute: typeof AdminGithubRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/configuracoes': {
+      id: '/admin/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/admin/configuracoes'
+      preLoaderRoute: typeof AdminConfiguracoesRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
+  AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
+  AdminGithubRoute: typeof AdminGithubRoute
+  AdminMidiasRoute: typeof AdminMidiasRoute
   AdminProjetosRoute: typeof AdminProjetosRoute
+  AdminTecnologiasRoute: typeof AdminTecnologiasRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminConfiguracoesRoute: AdminConfiguracoesRoute,
+  AdminGithubRoute: AdminGithubRoute,
+  AdminMidiasRoute: AdminMidiasRoute,
   AdminProjetosRoute: AdminProjetosRoute,
+  AdminTecnologiasRoute: AdminTecnologiasRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
