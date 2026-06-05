@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProjetoSlugRouteImport } from './routes/projeto.$slug'
+import { Route as AdminProjetosRouteImport } from './routes/admin.projetos'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -29,42 +31,70 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ProjetoSlugRoute = ProjetoSlugRouteImport.update({
   id: '/projeto/$slug',
   path: '/projeto/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminProjetosRoute = AdminProjetosRouteImport.update({
+  id: '/projetos',
+  path: '/projetos',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/projetos': typeof AdminProjetosRoute
   '/projeto/$slug': typeof ProjetoSlugRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/projetos': typeof AdminProjetosRoute
   '/projeto/$slug': typeof ProjetoSlugRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/projetos': typeof AdminProjetosRoute
   '/projeto/$slug': typeof ProjetoSlugRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/sitemap.xml' | '/projeto/$slug'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/sitemap.xml'
+    | '/admin/projetos'
+    | '/projeto/$slug'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/sitemap.xml' | '/projeto/$slug'
-  id: '__root__' | '/' | '/admin' | '/sitemap.xml' | '/projeto/$slug'
+  to: '/' | '/sitemap.xml' | '/admin/projetos' | '/projeto/$slug' | '/admin'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/sitemap.xml'
+    | '/admin/projetos'
+    | '/projeto/$slug'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ProjetoSlugRoute: typeof ProjetoSlugRoute
 }
@@ -92,6 +122,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/projeto/$slug': {
       id: '/projeto/$slug'
       path: '/projeto/$slug'
@@ -99,12 +136,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjetoSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/projetos': {
+      id: '/admin/projetos'
+      path: '/projetos'
+      fullPath: '/admin/projetos'
+      preLoaderRoute: typeof AdminProjetosRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminProjetosRoute: typeof AdminProjetosRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminProjetosRoute: AdminProjetosRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ProjetoSlugRoute: ProjetoSlugRoute,
 }
