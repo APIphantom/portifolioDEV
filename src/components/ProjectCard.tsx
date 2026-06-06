@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useCallback, useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Github, ExternalLink, ImageIcon, ArrowUpRight } from "lucide-react";
@@ -10,6 +10,19 @@ type Props = { project: Project; index: number };
 
 function ProjectCardBase({ project: p, index: i }: Props) {
   const categoryLabel = CATEGORIES.find((c) => c.value === p.category)?.label ?? p.category;
+  const prefetched = useRef(false);
+
+  // Hover-prefetch the case-study hero image so it's already in cache
+  // by the time TanStack Router preloads the route chunk.
+  const prefetchHero = useCallback(() => {
+    if (prefetched.current) return;
+    const url = p.heroImage || p.image;
+    if (!url) return;
+    prefetched.current = true;
+    const img = new Image();
+    img.decoding = "async";
+    img.src = url;
+  }, [p.heroImage, p.image]);
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -19,7 +32,7 @@ function ProjectCardBase({ project: p, index: i }: Props) {
     >
       <TiltCard className="h-full">
         <article className="group relative h-full rounded-2xl border border-border bg-card overflow-hidden hover:border-primary/60 hover:glow-neon transition-all">
-          <Link to="/projeto/$slug" params={{ slug: p.slug }} className="block" data-cursor="hover">
+          <Link to="/projeto/$slug" params={{ slug: p.slug }} onMouseEnter={prefetchHero} onFocus={prefetchHero} className="block" data-cursor="hover">
             <div className="relative">
               {p.image ? (
                 <LazyImage

@@ -10,6 +10,8 @@ import {
 import { Toaster } from "sonner";
 import { Loader } from "@/components/Loader";
 import { CustomCursor } from "@/components/CustomCursor";
+import { PageTransition } from "@/components/PageTransition";
+import { RouteProgress } from "@/components/RouteProgress";
 
 import appCss from "../styles.css?url";
 
@@ -128,7 +130,8 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <Loader />
       <CustomCursor />
-      <Outlet />
+      <RouteProgress />
+      <PageTransition />
       <Toaster theme="dark" position="bottom-center" toastOptions={{ style: { background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" } }} />
     </QueryClientProvider>
   );
