@@ -10,6 +10,8 @@ import {
 import { Toaster } from "sonner";
 import { Loader } from "@/components/Loader";
 import { CustomCursor } from "@/components/CustomCursor";
+import { PageTransition } from "@/components/PageTransition";
+import { RouteProgress } from "@/components/RouteProgress";
 
 import appCss from "../styles.css?url";
 
