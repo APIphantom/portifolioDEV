@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Search, MoreHorizontal, Pencil, Eye, Copy, Archive, Trash2, ExternalLink } from "lucide-react";
 import { useProjects, CATEGORIES, type Project, type ProjectStatus } from "@/lib/projects-store";
 import { ProjectEditor } from "@/components/admin/ProjectEditor";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/admin/projetos")({
   validateSearch: (s: Record<string, unknown>) => ({ new: s.new ? 1 : undefined }),
@@ -13,7 +14,7 @@ export const Route = createFileRoute("/admin/projetos")({
 function ProjetosPage() {
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
-  const { projects, addProject, updateProject, removeProject, duplicateProject } = useProjects();
+  const { projects, addProject, updateProject, removeProject, duplicateProject, loaded } = useProjects();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<"all" | ProjectStatus>("all");
   const [category, setCategory] = useState<"all" | string>("all");
@@ -137,7 +138,20 @@ function ProjetosPage() {
               </div>
             </div>
           ))}
-          {filtered.length === 0 && (
+          {!loaded && (
+            <div className="p-4 space-y-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="grid grid-cols-[1fr] md:grid-cols-[2fr_120px_2fr_120px_40px] gap-4 items-center">
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="hidden md:block h-5 w-20" />
+                  <Skeleton className="hidden md:block h-5 w-2/3" />
+                  <Skeleton className="hidden md:block h-4 w-16" />
+                  <Skeleton className="h-8 w-8" />
+                </div>
+              ))}
+            </div>
+          )}
+          {loaded && filtered.length === 0 && (
             <div className="p-12 text-center text-sm text-muted-foreground">
               Nenhum projeto encontrado.
             </div>

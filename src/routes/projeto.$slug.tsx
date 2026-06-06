@@ -49,7 +49,9 @@ export const Route = createFileRoute("/projeto/$slug")({
       { name: "description", content: `Case study do projeto ${params.slug} — objetivo, problema, solução, processo e resultado.` },
       { property: "og:title", content: `${params.slug} — Case Study` },
       { property: "og:type", content: "article" },
+      { property: "og:url", content: `/projeto/${params.slug}` },
     ],
+    links: [{ rel: "canonical", href: `/projeto/${params.slug}` }],
   }),
   component: ProjectPage,
 });
