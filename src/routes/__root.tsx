@@ -130,7 +130,8 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <Loader />
       <CustomCursor />
-      <Outlet />
+      <RouteProgress />
+      <PageTransition />
       <Toaster theme="dark" position="bottom-center" toastOptions={{ style: { background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" } }} />
     </QueryClientProvider>
   );
