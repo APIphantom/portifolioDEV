@@ -1,0 +1,241 @@
+import { useRef, useMemo } from "react";
+import { motion, useScroll, useTransform, useSpring, useMotionValueEvent } from "framer-motion";
+import { useState } from "react";
+import {
+  Sparkles,
+  GraduationCap,
+  Rocket,
+  Atom,
+  FileCode2,
+  Triangle,
+  Layers,
+  Target,
+  type LucideIcon,
+} from "lucide-react";
+
+export interface StorylineItem {
+  id: string;
+  year: string;
+  title: string;
+  subtitle?: string;
+  description: string;
+  icon: string;
+  badge?: string;
+  order: number;
+  active: boolean;
+}
+
+const ICONS: Record<string, LucideIcon> = {
+  sparkles: Sparkles,
+  graduation: GraduationCap,
+  rocket: Rocket,
+  atom: Atom,
+  filecode: FileCode2,
+  triangle: Triangle,
+  layers: Layers,
+  target: Target,
+};
+
+const DEFAULT_ITEMS: StorylineItem[] = [
+  { id: "1", year: "2019", title: "Início", subtitle: "Primeira linha de código", description: "Curiosidade virou obsessão. HTML e CSS abriram a porta de um universo novo.", icon: "sparkles", badge: "Origin", order: 1, active: true },
+  { id: "2", year: "2020", title: "Faculdade", subtitle: "Fundamentos sólidos", description: "Análise e Desenvolvimento de Sistemas. Lógica, algoritmos e a base que sustenta tudo.", icon: "graduation", badge: "Education", order: 2, active: true },
+  { id: "3", year: "2021", title: "Primeiros Projetos", subtitle: "Mãos no código", description: "Landing pages, sites institucionais e o primeiro contato com clientes reais.", icon: "rocket", badge: "Build", order: 3, active: true },
+  { id: "4", year: "2022", title: "React", subtitle: "Componentização", description: "Pensar em componentes mudou minha forma de construir interfaces para sempre.", icon: "atom", badge: "Frontend", order: 4, active: true },
+  { id: "5", year: "2023", title: "TypeScript", subtitle: "Código robusto", description: "Tipagem forte, refactors seguros e produtividade em escala.", icon: "filecode", badge: "DX", order: 5, active: true },
+  { id: "6", year: "2024", title: "Next.js", subtitle: "Full-stack mindset", description: "SSR, edge functions e performance como prioridade desde o primeiro commit.", icon: "triangle", badge: "Framework", order: 6, active: true },
+  { id: "7", year: "2025", title: "Portfólio Atual", subtitle: "Identidade própria", description: "STVX/DEV — código com estética, performance e voz autoral.", icon: "layers", badge: "Now", order: 7, active: true },
+  { id: "8", year: "2026+", title: "Próximo Nível", subtitle: "Sem teto", description: "WebGL, IA aplicada ao front-end e produtos com identidade cinematográfica.", icon: "target", badge: "Next", order: 8, active: true },
+];
+
+interface Props {
+  items?: StorylineItem[];
+}
+
+export function Storyline({ items = DEFAULT_ITEMS }: Props) {
+  const containerRef = useRef<HTMLElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  const sorted = useMemo(
+    () => [...items].filter((i) => i.active).sort((a, b) => a.order - b.order),
+    [items],
+  );
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
+
+  // Horizontal translate based on vertical scroll progress
+  const xRaw = useTransform(scrollYProgress, [0, 1], ["2%", "-82%"]);
+  const x = useSpring(xRaw, { stiffness: 80, damping: 22, mass: 0.4 });
+
+  const progressScale = useSpring(scrollYProgress, { stiffness: 120, damping: 24 });
+  const progressPct = useTransform(scrollYProgress, (v) => `${Math.round(v * 100)}%`);
+
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    const idx = Math.min(sorted.length - 1, Math.max(0, Math.round(v * (sorted.length - 1))));
+    if (idx !== activeIdx) setActiveIdx(idx);
+  });
+
+  return (
+    <section
+      id="storyline"
+      ref={containerRef}
+      className="relative bg-background"
+      style={{ height: `${Math.max(120, sorted.length * 60)}vh` }}
+      aria-label="Storyline — Minha evolução através do código"
+    >
+      <div className="sticky top-0 h-screen overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="px-6 lg:px-10 pt-20 pb-8 mx-auto max-w-7xl w-full">
+          <div className="flex items-end justify-between gap-8 flex-wrap">
+            <div>
+              <div className="text-xs uppercase tracking-[0.5em] text-primary mb-4">
+                // 05 — Storyline
+              </div>
+              <h2 className="display text-[clamp(2rem,6vw,5rem)] leading-[0.95] max-w-3xl">
+                Minha evolução
+                <br />
+                através do <span className="text-primary text-glow">código.</span>
+              </h2>
+              <p className="mt-6 max-w-xl text-muted-foreground">
+                Cada projeto, tecnologia e aprendizado construiu a forma como desenvolvo
+                interfaces hoje.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-4 min-w-[220px]">
+              <motion.span className="font-mono text-sm text-primary tabular-nums">
+                {progressPct}
+              </motion.span>
+              <div className="relative h-[2px] flex-1 bg-border overflow-hidden rounded-full">
+                <motion.div
+                  style={{ scaleX: progressScale, transformOrigin: "left" }}
+                  className="absolute inset-0 bg-primary glow-neon"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Dots / connectors */}
+          <div className="mt-8 hidden md:flex items-center gap-2">
+            {sorted.map((item, i) => (
+              <div key={item.id} className="flex items-center gap-2 flex-1 last:flex-none">
+                <motion.span
+                  animate={{
+                    scale: i === activeIdx ? 1.4 : 1,
+                    backgroundColor:
+                      i <= activeIdx ? "var(--primary)" : "var(--border)",
+                    boxShadow:
+                      i === activeIdx
+                        ? "0 0 16px rgba(var(--glow-color), 0.8)"
+                        : "0 0 0 rgba(0,0,0,0)",
+                  }}
+                  transition={{ duration: 0.4 }}
+                  className="size-2 rounded-full"
+                />
+                {i < sorted.length - 1 && (
+                  <div className="flex-1 h-px bg-border relative overflow-hidden">
+                    <motion.div
+                      animate={{ scaleX: i < activeIdx ? 1 : 0 }}
+                      transition={{ duration: 0.5 }}
+                      style={{ transformOrigin: "left" }}
+                      className="absolute inset-0 bg-primary/60"
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Horizontal track */}
+        <div className="flex-1 relative flex items-center">
+          <motion.div
+            ref={trackRef}
+            style={{ x }}
+            className="flex gap-8 px-6 lg:px-10 will-change-transform"
+          >
+            {sorted.map((item, i) => {
+              const Icon = ICONS[item.icon] ?? Sparkles;
+              const isActive = i === activeIdx;
+              return (
+                <motion.article
+                  key={item.id}
+                  animate={{
+                    scale: isActive ? 1.03 : 0.92,
+                    opacity: isActive ? 1 : 0.45,
+                    filter: isActive ? "blur(0px)" : "blur(2px)",
+                  }}
+                  whileHover={{ scale: isActive ? 1.05 : 0.96 }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative shrink-0 w-[78vw] sm:w-[52vw] md:w-[40vw] lg:w-[28vw] xl:w-[24vw] aspect-[4/5] rounded-2xl border border-border bg-card p-8 flex flex-col justify-between overflow-hidden group"
+                  style={{
+                    boxShadow: isActive
+                      ? "0 0 0 1px var(--primary), 0 0 60px rgba(var(--glow-color), 0.18)"
+                      : undefined,
+                  }}
+                  data-cursor="hover"
+                >
+                  {/* Internal parallax glow */}
+                  <motion.div
+                    aria-hidden
+                    animate={{ opacity: isActive ? 1 : 0 }}
+                    className="absolute -top-20 -right-20 size-64 rounded-full bg-primary/20 blur-3xl pointer-events-none"
+                  />
+
+                  <div className="relative flex items-start justify-between">
+                    <div>
+                      <div className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
+                        // {String(item.order).padStart(2, "0")}
+                      </div>
+                      <div className="display text-5xl mt-2 text-primary">{item.year}</div>
+                    </div>
+                    <div className="size-12 rounded-xl border border-border flex items-center justify-center bg-background/50 group-hover:border-primary transition-colors">
+                      <Icon className="size-5 text-primary" />
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    {item.badge && (
+                      <span className="inline-block text-[10px] uppercase tracking-[0.3em] px-2 py-1 border border-primary/40 text-primary rounded-full mb-4">
+                        {item.badge}
+                      </span>
+                    )}
+                    <h3 className="display text-3xl leading-tight">{item.title}</h3>
+                    {item.subtitle && (
+                      <p className="text-sm text-primary/80 mt-1">{item.subtitle}</p>
+                    )}
+                    <p className="text-sm text-muted-foreground mt-4 leading-relaxed">
+                      {item.description}
+                    </p>
+                  </div>
+
+                  {/* Bottom marker line */}
+                  <motion.div
+                    aria-hidden
+                    animate={{ scaleX: isActive ? 1 : 0.2 }}
+                    style={{ transformOrigin: "left" }}
+                    className="absolute bottom-0 left-0 right-0 h-px bg-primary"
+                  />
+                </motion.article>
+              );
+            })}
+          </motion.div>
+
+          {/* Side fades */}
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background to-transparent" />
+        </div>
+
+        <div className="px-6 lg:px-10 pb-6 mx-auto max-w-7xl w-full flex items-center justify-between text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
+          <span>Scroll ↓ para avançar</span>
+          <span className="font-mono">
+            {String(activeIdx + 1).padStart(2, "0")} / {String(sorted.length).padStart(2, "0")}
+          </span>
+        </div>
+      </div>
+    </section>
+  );
+}
