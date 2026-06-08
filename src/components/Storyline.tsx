@@ -1,57 +1,16 @@
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useState } from "react";
 import { motion, useScroll, useTransform, useSpring, useMotionValueEvent } from "framer-motion";
-import { useState } from "react";
-import {
-  Sparkles,
-  GraduationCap,
-  Rocket,
-  Atom,
-  FileCode2,
-  Triangle,
-  Layers,
-  Target,
-  type LucideIcon,
-} from "lucide-react";
-
-export interface StorylineItem {
-  id: string;
-  year: string;
-  title: string;
-  subtitle?: string;
-  description: string;
-  icon: string;
-  badge?: string;
-  order: number;
-  active: boolean;
-}
-
-const ICONS: Record<string, LucideIcon> = {
-  sparkles: Sparkles,
-  graduation: GraduationCap,
-  rocket: Rocket,
-  atom: Atom,
-  filecode: FileCode2,
-  triangle: Triangle,
-  layers: Layers,
-  target: Target,
-};
-
-const DEFAULT_ITEMS: StorylineItem[] = [
-  { id: "1", year: "2019", title: "Início", subtitle: "Primeira linha de código", description: "Curiosidade virou obsessão. HTML e CSS abriram a porta de um universo novo.", icon: "sparkles", badge: "Origin", order: 1, active: true },
-  { id: "2", year: "2020", title: "Faculdade", subtitle: "Fundamentos sólidos", description: "Análise e Desenvolvimento de Sistemas. Lógica, algoritmos e a base que sustenta tudo.", icon: "graduation", badge: "Education", order: 2, active: true },
-  { id: "3", year: "2021", title: "Primeiros Projetos", subtitle: "Mãos no código", description: "Landing pages, sites institucionais e o primeiro contato com clientes reais.", icon: "rocket", badge: "Build", order: 3, active: true },
-  { id: "4", year: "2022", title: "React", subtitle: "Componentização", description: "Pensar em componentes mudou minha forma de construir interfaces para sempre.", icon: "atom", badge: "Frontend", order: 4, active: true },
-  { id: "5", year: "2023", title: "TypeScript", subtitle: "Código robusto", description: "Tipagem forte, refactors seguros e produtividade em escala.", icon: "filecode", badge: "DX", order: 5, active: true },
-  { id: "6", year: "2024", title: "Next.js", subtitle: "Full-stack mindset", description: "SSR, edge functions e performance como prioridade desde o primeiro commit.", icon: "triangle", badge: "Framework", order: 6, active: true },
-  { id: "7", year: "2025", title: "Portfólio Atual", subtitle: "Identidade própria", description: "STVX/DEV — código com estética, performance e voz autoral.", icon: "layers", badge: "Now", order: 7, active: true },
-  { id: "8", year: "2026+", title: "Próximo Nível", subtitle: "Sem teto", description: "WebGL, IA aplicada ao front-end e produtos com identidade cinematográfica.", icon: "target", badge: "Next", order: 8, active: true },
-];
+import { Sparkles } from "lucide-react";
+import { useStoryline, STORYLINE_ICONS, type StorylineItem } from "@/lib/storyline-store";
 
 interface Props {
   items?: StorylineItem[];
 }
 
-export function Storyline({ items = DEFAULT_ITEMS }: Props) {
+export function Storyline({ items: itemsProp }: Props) {
+  const { items: stored } = useStoryline();
+  const items = itemsProp ?? stored;
+
   const containerRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState(0);
@@ -66,7 +25,6 @@ export function Storyline({ items = DEFAULT_ITEMS }: Props) {
     offset: ["start start", "end end"],
   });
 
-  // Horizontal translate based on vertical scroll progress
   const xRaw = useTransform(scrollYProgress, [0, 1], ["2%", "-82%"]);
   const x = useSpring(xRaw, { stiffness: 80, damping: 22, mass: 0.4 });
 
@@ -74,9 +32,12 @@ export function Storyline({ items = DEFAULT_ITEMS }: Props) {
   const progressPct = useTransform(scrollYProgress, (v) => `${Math.round(v * 100)}%`);
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
+    if (sorted.length === 0) return;
     const idx = Math.min(sorted.length - 1, Math.max(0, Math.round(v * (sorted.length - 1))));
     if (idx !== activeIdx) setActiveIdx(idx);
   });
+
+  if (sorted.length === 0) return null;
 
   return (
     <section
@@ -87,7 +48,6 @@ export function Storyline({ items = DEFAULT_ITEMS }: Props) {
       aria-label="Storyline — Minha evolução através do código"
     >
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col">
-        {/* Header */}
         <div className="px-6 lg:px-10 pt-20 pb-8 mx-auto max-w-7xl w-full">
           <div className="flex items-end justify-between gap-8 flex-wrap">
             <div>
@@ -118,19 +78,13 @@ export function Storyline({ items = DEFAULT_ITEMS }: Props) {
             </div>
           </div>
 
-          {/* Dots / connectors */}
           <div className="mt-8 hidden md:flex items-center gap-2">
             {sorted.map((item, i) => (
               <div key={item.id} className="flex items-center gap-2 flex-1 last:flex-none">
                 <motion.span
                   animate={{
                     scale: i === activeIdx ? 1.4 : 1,
-                    backgroundColor:
-                      i <= activeIdx ? "var(--primary)" : "var(--border)",
-                    boxShadow:
-                      i === activeIdx
-                        ? "0 0 16px rgba(var(--glow-color), 0.8)"
-                        : "0 0 0 rgba(0,0,0,0)",
+                    backgroundColor: i <= activeIdx ? "var(--primary)" : "var(--border)",
                   }}
                   transition={{ duration: 0.4 }}
                   className="size-2 rounded-full"
@@ -150,7 +104,6 @@ export function Storyline({ items = DEFAULT_ITEMS }: Props) {
           </div>
         </div>
 
-        {/* Horizontal track */}
         <div className="flex-1 relative flex items-center">
           <motion.div
             ref={trackRef}
@@ -158,7 +111,7 @@ export function Storyline({ items = DEFAULT_ITEMS }: Props) {
             className="flex gap-8 px-6 lg:px-10 will-change-transform"
           >
             {sorted.map((item, i) => {
-              const Icon = ICONS[item.icon] ?? Sparkles;
+              const Icon = STORYLINE_ICONS[item.icon] ?? Sparkles;
               const isActive = i === activeIdx;
               return (
                 <motion.article
@@ -178,7 +131,6 @@ export function Storyline({ items = DEFAULT_ITEMS }: Props) {
                   }}
                   data-cursor="hover"
                 >
-                  {/* Internal parallax glow */}
                   <motion.div
                     aria-hidden
                     animate={{ opacity: isActive ? 1 : 0 }}
@@ -212,7 +164,6 @@ export function Storyline({ items = DEFAULT_ITEMS }: Props) {
                     </p>
                   </div>
 
-                  {/* Bottom marker line */}
                   <motion.div
                     aria-hidden
                     animate={{ scaleX: isActive ? 1 : 0.2 }}
@@ -224,7 +175,6 @@ export function Storyline({ items = DEFAULT_ITEMS }: Props) {
             })}
           </motion.div>
 
-          {/* Side fades */}
           <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background to-transparent" />
         </div>

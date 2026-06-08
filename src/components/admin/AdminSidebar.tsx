@@ -1,10 +1,11 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { LayoutGrid, FolderKanban, Image as ImageIcon, Cpu, Github, Settings as SettingsIcon, LogOut, ExternalLink } from "lucide-react";
+import { LayoutGrid, FolderKanban, Image as ImageIcon, Cpu, Github, Settings as SettingsIcon, LogOut, ExternalLink, Milestone } from "lucide-react";
 
 const items = [
   { to: "/admin", label: "Início", icon: LayoutGrid, exact: true },
   { to: "/admin/projetos", label: "Projetos", icon: FolderKanban },
+  { to: "/admin/storyline", label: "Storyline", icon: Milestone },
   { to: "/admin/midias", label: "Mídias", icon: ImageIcon },
   { to: "/admin/tecnologias", label: "Tecnologias", icon: Cpu },
   { to: "/admin/github", label: "GitHub Import", icon: Github },
