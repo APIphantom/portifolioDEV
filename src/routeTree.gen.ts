@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProjetoSlugRouteImport } from './routes/projeto.$slug'
 import { Route as AdminTecnologiasRouteImport } from './routes/admin.tecnologias'
+import { Route as AdminStorylineRouteImport } from './routes/admin.storyline'
 import { Route as AdminProjetosRouteImport } from './routes/admin.projetos'
 import { Route as AdminMidiasRouteImport } from './routes/admin.midias'
 import { Route as AdminGithubRouteImport } from './routes/admin.github'
@@ -50,6 +51,11 @@ const AdminTecnologiasRoute = AdminTecnologiasRouteImport.update({
   path: '/tecnologias',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminStorylineRoute = AdminStorylineRouteImport.update({
+  id: '/storyline',
+  path: '/storyline',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminProjetosRoute = AdminProjetosRouteImport.update({
   id: '/projetos',
   path: '/projetos',
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/admin/github': typeof AdminGithubRoute
   '/admin/midias': typeof AdminMidiasRoute
   '/admin/projetos': typeof AdminProjetosRoute
+  '/admin/storyline': typeof AdminStorylineRoute
   '/admin/tecnologias': typeof AdminTecnologiasRoute
   '/projeto/$slug': typeof ProjetoSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/admin/github': typeof AdminGithubRoute
   '/admin/midias': typeof AdminMidiasRoute
   '/admin/projetos': typeof AdminProjetosRoute
+  '/admin/storyline': typeof AdminStorylineRoute
   '/admin/tecnologias': typeof AdminTecnologiasRoute
   '/projeto/$slug': typeof ProjetoSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/admin/github': typeof AdminGithubRoute
   '/admin/midias': typeof AdminMidiasRoute
   '/admin/projetos': typeof AdminProjetosRoute
+  '/admin/storyline': typeof AdminStorylineRoute
   '/admin/tecnologias': typeof AdminTecnologiasRoute
   '/projeto/$slug': typeof ProjetoSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/admin/github'
     | '/admin/midias'
     | '/admin/projetos'
+    | '/admin/storyline'
     | '/admin/tecnologias'
     | '/projeto/$slug'
     | '/admin/'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/admin/github'
     | '/admin/midias'
     | '/admin/projetos'
+    | '/admin/storyline'
     | '/admin/tecnologias'
     | '/projeto/$slug'
     | '/admin'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/admin/github'
     | '/admin/midias'
     | '/admin/projetos'
+    | '/admin/storyline'
     | '/admin/tecnologias'
     | '/projeto/$slug'
     | '/admin/'
@@ -196,6 +208,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTecnologiasRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/storyline': {
+      id: '/admin/storyline'
+      path: '/storyline'
+      fullPath: '/admin/storyline'
+      preLoaderRoute: typeof AdminStorylineRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/projetos': {
       id: '/admin/projetos'
       path: '/projetos'
@@ -232,6 +251,7 @@ interface AdminRouteChildren {
   AdminGithubRoute: typeof AdminGithubRoute
   AdminMidiasRoute: typeof AdminMidiasRoute
   AdminProjetosRoute: typeof AdminProjetosRoute
+  AdminStorylineRoute: typeof AdminStorylineRoute
   AdminTecnologiasRoute: typeof AdminTecnologiasRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -241,6 +261,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminGithubRoute: AdminGithubRoute,
   AdminMidiasRoute: AdminMidiasRoute,
   AdminProjetosRoute: AdminProjetosRoute,
+  AdminStorylineRoute: AdminStorylineRoute,
   AdminTecnologiasRoute: AdminTecnologiasRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
