@@ -268,10 +268,10 @@ export type Settings = {
 };
 
 const settingsDefaults: Settings = {
-  name: "Adriano",
-  role: "Front-End Developer",
-  bio: "Construindo experiências digitais com identidade, performance e estética moderna.",
-  email: "hello@stvx.dev",
+  name: "Adriano Oliveira",
+  role: "Desenvolvedor Front-End Júnior",
+  bio: "Front-End Júnior apaixonado por React, Next.js e TypeScript. Transformo ideias em interfaces modernas, responsivas e acessíveis.",
+  email: "contato@adrianodev.com",
   location: "Brasil",
   github: "",
   linkedin: "",

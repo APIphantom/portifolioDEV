@@ -16,12 +16,16 @@ import { useProjects } from "@/lib/projects-store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "STVX // Front-End Developer Portfolio — Streetwear Code" },
-      { name: "description", content: "Portfolio premium de Front-End Developer Jr. — React, TypeScript, Tailwind, Framer Motion. Identidade streetwear, performance e estética cinematográfica." },
-      { property: "og:title", content: "STVX // Front-End Developer" },
-      { property: "og:description", content: "Construindo experiências digitais com identidade, performance e estética moderna." },
+      { title: "Adriano Oliveira — Desenvolvedor Front-End Júnior" },
+      { name: "description", content: "Portfólio de Adriano Oliveira, Desenvolvedor Front-End Júnior. React, Next.js, TypeScript e Tailwind. Interfaces modernas, responsivas e acessíveis." },
+      { name: "keywords", content: "front-end júnior, desenvolvedor react, next.js, typescript, tailwind, portfólio dev, Adriano Oliveira" },
+      { property: "og:title", content: "Adriano Oliveira — Front-End Júnior" },
+      { property: "og:description", content: "Transformo ideias em interfaces modernas, responsivas e acessíveis. Em busca da minha primeira oportunidade em Front-End." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Adriano Oliveira — Front-End Júnior" },
+      { name: "twitter:description", content: "React · Next.js · TypeScript · Tailwind — Front-End Júnior em busca de oportunidade." },
     ],
     links: [{ rel: "canonical", href: "/" }],
     scripts: [{
@@ -29,9 +33,10 @@ export const Route = createFileRoute("/")({
       children: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Person",
-        name: "STVX",
-        jobTitle: "Front-End Developer",
+        name: "Adriano Oliveira",
+        jobTitle: "Desenvolvedor Front-End Júnior",
         url: "/",
+        knowsAbout: ["React", "Next.js", "TypeScript", "Tailwind CSS", "JavaScript", "HTML", "CSS"],
         sameAs: ["https://github.com", "https://linkedin.com"],
       }),
     }],

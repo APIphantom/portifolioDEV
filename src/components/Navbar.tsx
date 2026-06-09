@@ -40,9 +40,9 @@ export function Navbar() {
         }`}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 group" data-cursor="hover">
-            <span className="inline-block w-2.5 h-2.5 bg-primary rounded-sm group-hover:rotate-45 transition-transform" />
-            <span className="font-black tracking-[-0.05em] text-lg">STVX<span className="text-primary">/</span>DEV</span>
+          <Link to="/" className="flex items-center gap-2 group" data-cursor="hover" aria-label="Início — Adriano Oliveira">
+            <span className="inline-block w-2.5 h-2.5 bg-primary rounded-sm group-hover:rotate-45 transition-transform" aria-hidden="true" />
+            <span className="font-black tracking-[-0.05em] text-lg">ADRIANO<span className="text-primary">/</span>DEV</span>
           </Link>
           <nav className="hidden md:flex items-center gap-1">
             {links.map((l) => (
@@ -88,7 +88,7 @@ export function Navbar() {
           >
             <div className="absolute inset-0 grid-bg opacity-40" />
             <div className="relative flex items-center justify-between p-6 border-b border-border">
-              <span className="font-black tracking-tight">STVX<span className="text-primary">/</span>DEV</span>
+              <span className="font-black tracking-tight">ADRIANO<span className="text-primary">/</span>DEV</span>
               <button onClick={() => setOpen(false)} className="p-2 rounded-md border border-border" aria-label="Fechar menu">
                 <X className="size-5" />
               </button>
