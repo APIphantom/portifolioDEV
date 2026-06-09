@@ -4,14 +4,14 @@ export function Footer() {
       <div className="mx-auto max-w-7xl flex flex-col md:flex-row gap-6 md:items-end md:justify-between">
         <div>
           <div className="display text-4xl md:text-6xl">
-            STVX<span className="text-primary">/</span>DEV
+            ADRIANO<span className="text-primary">/</span>DEV
           </div>
           <p className="text-xs uppercase tracking-widest text-muted-foreground mt-2">
-            Wear the code. Code the wear.
+            Front-End Júnior · Aprendendo, construindo, evoluindo.
           </p>
         </div>
         <div className="text-xs uppercase tracking-widest text-muted-foreground">
-          © {new Date().getFullYear()} — All drops reserved · Built with intent
+          © {new Date().getFullYear()} Adriano Oliveira · Feito com React, TypeScript e café
         </div>
       </div>
     </footer>

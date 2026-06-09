@@ -2,18 +2,21 @@ import { motion } from "framer-motion";
 import { ArrowDown, Download, Mail } from "lucide-react";
 import { MagneticButton } from "./MagneticButton";
 
-const TITLE_TOP = "STREET".split("");
-const TITLE_BOT = "CODE".split("");
+const TITLE_TOP = "FRONT".split("");
+const TITLE_BOT = "END".split("");
 
 export function Hero() {
   return (
-    <section id="home" className="relative min-h-screen overflow-hidden flex items-center pt-24 pb-24">
-      <div className="absolute inset-0 -z-10">
+    <section
+      id="home"
+      className="relative min-h-screen overflow-hidden flex items-center pt-24 pb-24"
+      aria-labelledby="hero-title"
+    >
+      <div className="absolute inset-0 -z-10" aria-hidden="true">
         <div className="absolute inset-0 grid-bg" />
         <div className="absolute inset-0 scanlines opacity-50" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(var(--glow-color),0.15),transparent_55%)]" />
         <motion.div
-          aria-hidden
           initial={{ rotate: 0 }}
           animate={{ rotate: 360 }}
           transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
@@ -23,7 +26,6 @@ export function Hero() {
           <div className="absolute inset-24 rounded-full border border-primary/5" />
         </motion.div>
         <motion.div
-          aria-hidden
           animate={{ opacity: [0.35, 0.65, 0.35] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           className="absolute -left-32 bottom-10 w-[420px] h-[420px] rounded-full bg-primary/20 blur-[130px]"
@@ -38,13 +40,16 @@ export function Hero() {
             transition={{ duration: 0.6 }}
             className="flex items-center gap-3 mb-8"
           >
-            <span className="size-2 rounded-full bg-primary animate-pulse" />
+            <span className="size-2 rounded-full bg-primary animate-pulse" aria-hidden="true" />
             <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              Available for hire — 2026
+              Disponível para oportunidades — 2026
             </span>
           </motion.div>
 
-          <h1 className="display text-[clamp(3.5rem,12vw,11rem)] leading-[0.82] overflow-hidden">
+          <h1
+            id="hero-title"
+            className="display text-[clamp(3.5rem,12vw,11rem)] leading-[0.82] overflow-hidden"
+          >
             <span className="block">
               {TITLE_TOP.map((l, i) => (
                 <motion.span
@@ -87,9 +92,9 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.9 }}
             className="mt-8 max-w-xl text-base md:text-lg text-muted-foreground"
           >
-            <span className="text-foreground font-medium">Front-End Developer.</span> Construindo
-            experiências digitais com identidade, performance e estética moderna — onde streetwear
-            encontra interface.
+            <span className="text-foreground font-medium">Sou Adriano Oliveira, Desenvolvedor Front-End Júnior.</span>{" "}
+            Transformo ideias em interfaces modernas, responsivas e acessíveis com React, Next.js,
+            TypeScript e Tailwind — focado em performance e boas práticas.
           </motion.p>
 
           <motion.div
@@ -100,24 +105,25 @@ export function Hero() {
           >
             <MagneticButton
               onClick={() => document.getElementById("projetos")?.scrollIntoView({ behavior: "smooth" })}
-              className="group inline-flex items-center gap-2 px-6 py-4 bg-primary text-primary-foreground rounded-full font-bold uppercase tracking-widest text-xs hover:glow-neon transition-all"
+              className="group inline-flex items-center gap-2 px-6 py-4 bg-primary text-primary-foreground rounded-full font-bold uppercase tracking-widest text-xs hover:glow-neon transition-all min-h-11"
             >
               Ver Projetos
-              <ArrowDown className="size-4 group-hover:translate-y-0.5 transition-transform" />
+              <ArrowDown className="size-4 group-hover:translate-y-0.5 transition-transform" aria-hidden="true" />
             </MagneticButton>
             <a
-              href="#"
+              href="/cv-adriano-oliveira.pdf"
+              download
               data-cursor="hover"
-              className="inline-flex items-center gap-2 px-6 py-4 border border-border rounded-full font-bold uppercase tracking-widest text-xs hover:border-primary hover:text-primary transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-4 border border-border rounded-full font-bold uppercase tracking-widest text-xs hover:border-primary hover:text-primary transition-colors min-h-11"
             >
-              <Download className="size-4" /> Download CV
+              <Download className="size-4" aria-hidden="true" /> Download CV
             </a>
             <a
               href="#contato"
               data-cursor="hover"
-              className="inline-flex items-center gap-2 px-6 py-4 rounded-full font-bold uppercase tracking-widest text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-4 rounded-full font-bold uppercase tracking-widest text-xs text-muted-foreground hover:text-foreground transition-colors min-h-11"
             >
-              <Mail className="size-4" /> Contato
+              <Mail className="size-4" aria-hidden="true" /> Contato
             </a>
           </motion.div>
         </div>
@@ -129,15 +135,15 @@ export function Hero() {
           className="lg:col-span-4 space-y-4 text-xs uppercase tracking-widest"
         >
           <div className="border-l-2 border-primary pl-4">
-            <div className="text-muted-foreground">Drop 01 / V.2026</div>
-            <div className="text-foreground font-bold mt-1">Portfolio — Edição Limitada</div>
+            <div className="text-muted-foreground">Portfólio / V.2026</div>
+            <div className="text-foreground font-bold mt-1">Front-End Júnior — Em busca de oportunidade</div>
           </div>
           <div className="grid grid-cols-2 gap-px bg-border rounded-lg overflow-hidden">
             {[
-              { k: "+3", v: "Anos" },
-              { k: "20+", v: "Projetos" },
-              { k: "12", v: "Stacks" },
-              { k: "∞", v: "Café" },
+              { k: "React", v: "Stack principal" },
+              { k: "TS", v: "Tipagem forte" },
+              { k: "10+", v: "Projetos pessoais" },
+              { k: "24/7", v: "Aprendendo" },
             ].map((s) => (
               <div key={s.v} className="bg-card p-4">
                 <div className="text-3xl font-black text-primary">{s.k}</div>
@@ -151,7 +157,7 @@ export function Hero() {
       <div className="absolute bottom-0 left-0 right-0 border-y border-border bg-background/40 backdrop-blur-sm overflow-hidden">
         <div className="flex animate-marquee whitespace-nowrap py-3">
           {Array.from({ length: 2 }).flatMap((_, k) =>
-            ["REACT", "TAILWIND", "TYPESCRIPT", "FRAMER MOTION", "NEXT.JS", "FIGMA", "GIT", "NODE"].map(
+            ["REACT", "TAILWIND", "TYPESCRIPT", "NEXT.JS", "VITE", "FIGMA", "GIT", "REST API"].map(
               (t, i) => (
                 <span key={`${k}-${i}`} className="mx-8 text-sm font-black tracking-widest text-muted-foreground">
                   {t} <span className="text-primary">★</span>

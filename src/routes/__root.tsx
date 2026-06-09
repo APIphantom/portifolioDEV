@@ -78,10 +78,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "STVX // Front-End Developer Portfolio" },
-      { name: "description", content: "Streetwear-grade portfolio of a Front-End Developer building bold, performant digital experiences." },
-      { property: "og:title", content: "STVX // Front-End Developer" },
-      { property: "og:description", content: "Construindo experiências digitais com identidade, performance e estética moderna." },
+      { title: "Adriano Oliveira — Desenvolvedor Front-End Júnior" },
+      { name: "description", content: "Portfólio de Adriano Oliveira — Desenvolvedor Front-End Júnior em React, Next.js, TypeScript e Tailwind." },
+      { name: "author", content: "Adriano Oliveira" },
+      { property: "og:site_name", content: "Adriano Oliveira — Portfólio" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -97,8 +97,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       children: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "WebSite",
-        name: "STVX // Front-End Developer",
+        name: "Adriano Oliveira — Portfólio",
         url: "/",
+        author: { "@type": "Person", name: "Adriano Oliveira", jobTitle: "Desenvolvedor Front-End Júnior" },
       }),
     }],
   }),
@@ -110,7 +111,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <HeadContent />
       </head>
