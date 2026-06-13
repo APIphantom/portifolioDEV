@@ -1,6 +1,9 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { LayoutGrid, FolderKanban, Image as ImageIcon, Cpu, Github, Settings as SettingsIcon, LogOut, ExternalLink, Milestone } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 const items = [
   { to: "/admin", label: "Início", icon: LayoutGrid, exact: true },
@@ -17,9 +20,20 @@ const footerItems = [
 
 export function AdminSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const isActive = (to: string, exact?: boolean) =>
     exact ? pathname === to : pathname === to || pathname.startsWith(to + "/");
+
+  const handleLogout = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    toast.success("Sessão encerrada.");
+    navigate({ to: "/auth", replace: true });
+  };
+
 
   return (
     <aside className="hidden lg:flex w-60 shrink-0 flex-col border-r border-border/60 bg-card/40 backdrop-blur-xl sticky top-0 h-screen">
@@ -89,6 +103,7 @@ export function AdminSidebar() {
           <span>Ver site</span>
         </Link>
         <button
+          onClick={handleLogout}
           data-cursor="hover"
           className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all"
         >

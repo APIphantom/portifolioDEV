@@ -1,8 +1,24 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { AdminSidebar, AdminMobileBar } from "@/components/admin/AdminSidebar";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "STVX // Workspace" }, { name: "robots", content: "noindex" }] }),
+  ssr: false,
+  head: () => ({ meta: [{ title: "Adriano // Workspace" }, { name: "robots", content: "noindex" }] }),
+  beforeLoad: async ({ location }) => {
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !userData.user) {
+      throw redirect({ to: "/auth", search: { redirect: location.href } });
+    }
+    const { data: isAdmin, error: roleErr } = await supabase.rpc("has_role", {
+      _user_id: userData.user.id,
+      _role: "admin",
+    });
+    if (roleErr || isAdmin !== true) {
+      throw redirect({ to: "/auth", search: { redirect: location.href, reason: "forbidden" } });
+    }
+    return { user: userData.user };
+  },
   component: AdminLayout,
 });
 
