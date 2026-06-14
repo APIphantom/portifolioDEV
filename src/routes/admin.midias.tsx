@@ -9,16 +9,14 @@ export const Route = createFileRoute("/admin/midias")({
 });
 
 function MidiasPage() {
-  const { items, add, remove } = useMedia();
+  const { items, add, remove, uploading } = useMedia();
   const [q, setQ] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const ref = useRef<HTMLInputElement>(null);
 
   const handleFiles = (files: FileList) => {
     Array.from(files).forEach((f) => {
-      const r = new FileReader();
-      r.onload = () => add({ name: f.name, url: r.result as string, type: f.type, size: f.size });
-      r.readAsDataURL(f);
+      add({ name: f.name, url: "", type: f.type, size: f.size, file: f });
     });
   };
 
@@ -30,7 +28,7 @@ function MidiasPage() {
         <div>
           <div className="text-[10px] uppercase tracking-[0.3em] text-primary mb-2">// Mídias</div>
           <h1 className="text-3xl lg:text-4xl font-black tracking-tight">Biblioteca de mídias</h1>
-          <p className="text-muted-foreground text-sm mt-1">{items.length} arquivos · armazenamento local</p>
+          <p className="text-muted-foreground text-sm mt-1">{items.length} arquivos · Supabase Storage{uploading ? " · enviando…" : ""}</p>
         </div>
         <button onClick={() => ref.current?.click()} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground text-xs font-bold uppercase tracking-widest hover:glow-neon transition-shadow">
           <UploadCloud className="size-4" /> Upload

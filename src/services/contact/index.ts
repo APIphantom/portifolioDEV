@@ -9,15 +9,9 @@ export const contactSchema = z.object({
 export type ContactInput = z.infer<typeof contactSchema>;
 
 export type ContactResult =
-  | { ok: true; provider: ContactProvider }
+  | { ok: true; provider: "supabase" }
   | { ok: false; error: string };
 
-export type ContactProvider = "mock" | "emailjs" | "resend" | "supabase";
-
-/**
- * Valida os dados do formulário de contato.
- * Camada pura — fácil de testar e reutilizar.
- */
 export function validateContactForm(input: unknown):
   | { ok: true; data: ContactInput }
   | { ok: false; errors: Partial<Record<keyof ContactInput, string>> } {
@@ -32,39 +26,15 @@ export function validateContactForm(input: unknown):
 }
 
 /**
- * Persiste um lead localmente (versão mock).
- * Quando o Supabase estiver conectado, substituir por insert em `public.contact_leads`.
- */
-export async function saveContactLead(data: ContactInput): Promise<void> {
-  if (typeof window === "undefined") return;
-  const KEY = "stvx.contact.leads.v1";
-  try {
-    const raw = localStorage.getItem(KEY);
-    const list = raw ? (JSON.parse(raw) as Array<ContactInput & { createdAt: string }>) : [];
-    list.unshift({ ...data, createdAt: new Date().toISOString() });
-    localStorage.setItem(KEY, JSON.stringify(list.slice(0, 50)));
-  } catch {
-    /* noop */
-  }
-}
-
-/**
- * Envia a mensagem.
- * Hoje opera em modo mock (sempre OK após 800ms).
- * Pontos de integração futuros:
- *   - EmailJS: emailjs.send(SERVICE_ID, TEMPLATE_ID, data, PUBLIC_KEY)
- *   - Resend: server fn -> https://api.resend.com/emails
- *   - Supabase: server fn -> insert em `contact_leads` + edge function de notificação
+ * Persiste o lead direto no Supabase (tabela public.contact_leads) via server fn pública.
  */
 export async function sendContactMessage(input: ContactInput): Promise<ContactResult> {
   const validated = validateContactForm(input);
-  if (!validated.ok) {
-    return { ok: false, error: "Dados inválidos." };
-  }
+  if (!validated.ok) return { ok: false, error: "Dados inválidos." };
   try {
-    await saveContactLead(validated.data);
-    await new Promise((r) => setTimeout(r, 800));
-    return { ok: true, provider: "mock" };
+    const { submitContact } = await import("@/lib/portfolio.functions");
+    await submitContact({ data: validated.data });
+    return { ok: true, provider: "supabase" };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "Erro inesperado." };
   }
