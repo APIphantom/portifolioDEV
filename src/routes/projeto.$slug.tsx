@@ -155,11 +155,12 @@ const RESULTS = [
 function ProjectPage() {
   const { slug } = Route.useParams();
   const fetchProject = useServerFn(getProjectBySlug);
-  const { data: project, isPending } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ["project", slug],
     queryFn: () => fetchProject({ data: { slug } }),
     staleTime: 60_000,
   });
+  const project = data as Project | null | undefined;
 
   if (isPending) {
     return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Carregando…</div>;
