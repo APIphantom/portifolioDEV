@@ -1,46 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { motion, useInView } from "framer-motion";
 import {
-  ArrowLeft,
-  ArrowRight,
-  Github,
-  ExternalLink,
-  ImageIcon,
-  Play,
-  CheckCircle2,
-  Search,
-  PencilRuler,
-  Palette,
-  Code2,
-  TestTube2,
-  Rocket,
-  CircleDot,
-  Clock,
-  Briefcase,
-  Tag,
-  User,
-  Calendar,
-  Zap,
-  ShieldCheck,
-  Layers,
-  Database,
-  Cloud,
-  BarChart3,
-  Boxes,
-  Server,
-  CreditCard,
-  HardDrive,
-  Lock,
-  Smartphone,
-  Tablet,
-  Monitor,
-  Gauge,
-  TrendingUp,
-  TrendingDown,
-  Target,
+  ArrowLeft, ArrowRight, Github, ExternalLink, ImageIcon, Play, CheckCircle2,
+  Search, PencilRuler, Palette, Code2, TestTube2, Rocket, CircleDot, Clock,
+  Briefcase, Tag, User, Calendar, Zap, ShieldCheck, Layers, Database, Cloud,
+  BarChart3, Boxes, Server, CreditCard, HardDrive, Lock, Smartphone, Tablet,
+  Monitor, Gauge, TrendingUp, TrendingDown, Target,
 } from "lucide-react";
-import { readProjects, type Project, CATEGORIES } from "@/lib/projects-store";
+import { type Project, CATEGORIES } from "@/lib/projects-store";
+import { getProjectBySlug } from "@/lib/portfolio.functions";
 
 export const Route = createFileRoute("/projeto/$slug")({
   head: ({ params }) => ({
@@ -54,6 +25,16 @@ export const Route = createFileRoute("/projeto/$slug")({
     links: [{ rel: "canonical", href: `/projeto/${params.slug}` }],
   }),
   component: ProjectPage,
+  errorComponent: ({ error }) => (
+    <div className="min-h-screen flex items-center justify-center text-destructive p-6 text-center">
+      {error.message}
+    </div>
+  ),
+  notFoundComponent: () => (
+    <div className="min-h-screen flex items-center justify-center text-muted-foreground">
+      Projeto não encontrado.
+    </div>
+  ),
 });
 
 /* ---------- helpers ---------- */
