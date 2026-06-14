@@ -1,5 +1,14 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback } from "react";
+import { useQuery, useMutation, useQueryClient, useQueryClient as useQc } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import {
+  listProjects, upsertProject, deleteProject, duplicateProjectFn,
+  listTechnologies, upsertTechnology, deleteTechnology,
+  listMedia, uploadMedia, deleteMedia,
+  getSettings, updateSettings,
+} from "./portfolio.functions";
 
+/* ============ TIPOS (mantidos da versão antiga) ============ */
 export type ProjectCategory = "web" | "ui" | "ecommerce" | "experiment" | "mobile";
 export type ProjectStatus = "published" | "draft" | "archived";
 export type ProjectVisibility = "public" | "private";
@@ -58,13 +67,11 @@ export type Project = {
   category: ProjectCategory;
   github?: string;
   demo?: string;
-  // Legacy single-field case study
   objective?: string;
   problem?: string;
   solution?: string;
   process?: string;
   result?: string;
-  // New rich blocks
   contentBlocks?: ContentBlock[];
   metrics?: Metric[];
   seo?: SEO;
@@ -76,11 +83,6 @@ export type Project = {
   displayOrder?: number;
   updatedAt?: string;
 };
-
-const KEY = "stvx.projects.v3";
-const MEDIA_KEY = "stvx.media.v1";
-const TECH_KEY = "stvx.tech.v1";
-const SETTINGS_KEY = "stvx.settings.v1";
 
 export const CATEGORIES: { value: ProjectCategory; label: string }[] = [
   { value: "web", label: "Web App" },
@@ -100,103 +102,45 @@ export function slugify(s: string) {
 }
 
 export function uid() {
-  return (typeof crypto !== "undefined" && crypto.randomUUID)
+  return typeof crypto !== "undefined" && crypto.randomUUID
     ? crypto.randomUUID()
     : Math.random().toString(36).slice(2, 10);
 }
 
-const defaults: Project[] = [
-  {
-    id: "p1",
-    slug: "neon-commerce",
-    title: "NEON/COMMERCE",
-    description: "Storefront experimental para uma marca de streetwear com checkout fluido.",
-    longDescription: "Plataforma de e-commerce construída do zero com foco em performance, identidade visual e microinterações cinematográficas no checkout.",
-    image: "",
-    tech: ["React", "Tailwind", "Framer Motion", "Stripe"],
-    category: "ecommerce",
-    github: "https://github.com",
-    demo: "https://example.com",
-    objective: "Criar uma experiência de compra que transmita o DNA de uma marca premium.",
-    problem: "Storefronts genéricos diluem a identidade e reduzem percepção de valor.",
-    solution: "Layout editorial, transições com Framer Motion e checkout em 2 steps.",
-    process: "Wireframe em Figma, design tokens, build em React + Vite, testes com usuários reais.",
-    result: "Conversão +38%, tempo médio na página +52%, share orgânico em alta.",
-    publication: { status: "published", visibility: "public", featured: true },
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "p2",
-    slug: "grid-sound",
-    title: "GRID/SOUND",
-    description: "Player de música minimalista com visualização em grid e modo dark premium.",
-    image: "",
-    tech: ["React", "TypeScript", "Web Audio API"],
-    category: "experiment",
-    publication: { status: "published", visibility: "public" },
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "p3",
-    slug: "asphalt-os",
-    title: "ASPHALT/OS",
-    description: "Dashboard techwear para monitoramento de frota urbana em tempo real.",
-    image: "",
-    tech: ["Next.js", "Tailwind", "D3", "Supabase"],
-    category: "web",
-    publication: { status: "draft", visibility: "private" },
-    updatedAt: new Date().toISOString(),
-  },
-];
-
-function load<T>(key: string, fallback: T): T {
-  if (typeof window === "undefined") return fallback;
-  try {
-    const raw = localStorage.getItem(key);
-    if (raw) return JSON.parse(raw) as T;
-  } catch {}
-  return fallback;
-}
-
+/* ============ HOOKS ============ */
 export function useProjects() {
-  const [projects, setProjects] = useState<Project[]>(defaults);
-  const [loaded, setLoaded] = useState(false);
+  const qc = useQueryClient();
+  const list = useServerFn(listProjects);
+  const upsert = useServerFn(upsertProject);
+  const del = useServerFn(deleteProject);
+  const dup = useServerFn(duplicateProjectFn);
 
-  useEffect(() => {
-    setProjects(load<Project[]>(KEY, defaults));
-    setLoaded(true);
-  }, []);
+  const q = useQuery({ queryKey: ["projects"], queryFn: () => list(), staleTime: 30_000 });
+  const projects = (q.data ?? []) as Project[];
 
-  useEffect(() => {
-    if (loaded) localStorage.setItem(KEY, JSON.stringify(projects));
-  }, [projects, loaded]);
+  const invalidate = () => qc.invalidateQueries({ queryKey: ["projects"] });
+
+  const mUpsert = useMutation({ mutationFn: (p: any) => upsert({ data: p }), onSuccess: invalidate });
+  const mDel = useMutation({ mutationFn: (id: string) => del({ data: { id } }), onSuccess: invalidate });
+  const mDup = useMutation({ mutationFn: (id: string) => dup({ data: { id } }), onSuccess: invalidate });
 
   const addProject = useCallback((p: Omit<Project, "id" | "slug"> & { slug?: string }) => {
     const slug = p.slug || slugify(p.title) || uid().slice(0, 8);
-    setProjects((prev) => [{ ...p, id: uid(), slug, updatedAt: new Date().toISOString() }, ...prev]);
-  }, []);
+    mUpsert.mutate({ ...p, slug });
+  }, [mUpsert]);
+
   const updateProject = useCallback((id: string, patch: Partial<Project>) => {
-    setProjects((prev) => prev.map((p) => (p.id === id ? { ...p, ...patch, updatedAt: new Date().toISOString() } : p)));
-  }, []);
-  const removeProject = useCallback((id: string) => {
-    setProjects((prev) => prev.filter((p) => p.id !== id));
-  }, []);
-  const duplicateProject = useCallback((id: string) => {
-    setProjects((prev) => {
-      const orig = prev.find((p) => p.id === id);
-      if (!orig) return prev;
-      return [{ ...orig, id: uid(), slug: `${orig.slug}-copy`, title: `${orig.title} (cópia)`, updatedAt: new Date().toISOString() }, ...prev];
-    });
-  }, []);
+    const current = projects.find((x) => x.id === id);
+    mUpsert.mutate({ ...current, ...patch, id });
+  }, [mUpsert, projects]);
 
-  return { projects, addProject, updateProject, removeProject, duplicateProject, loaded };
+  const removeProject = useCallback((id: string) => mDel.mutate(id), [mDel]);
+  const duplicateProject = useCallback((id: string) => mDup.mutate(id), [mDup]);
+
+  return { projects, addProject, updateProject, removeProject, duplicateProject, loaded: !q.isPending };
 }
 
-export function readProjects(): Project[] {
-  return load<Project[]>(KEY, defaults);
-}
-
-/* ============ MEDIA LIBRARY ============ */
+/* ============ MEDIA ============ */
 export type MediaItem = {
   id: string;
   name: string;
@@ -207,17 +151,54 @@ export type MediaItem = {
   createdAt: string;
 };
 
-export function useMedia() {
-  const [items, setItems] = useState<MediaItem[]>([]);
-  const [loaded, setLoaded] = useState(false);
-  useEffect(() => { setItems(load<MediaItem[]>(MEDIA_KEY, [])); setLoaded(true); }, []);
-  useEffect(() => { if (loaded) localStorage.setItem(MEDIA_KEY, JSON.stringify(items)); }, [items, loaded]);
+async function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => {
+      const result = r.result as string;
+      const idx = result.indexOf(",");
+      resolve(idx >= 0 ? result.slice(idx + 1) : result);
+    };
+    r.onerror = () => reject(r.error);
+    r.readAsDataURL(file);
+  });
+}
 
-  const add = useCallback((m: Omit<MediaItem, "id" | "createdAt">) => {
-    setItems((p) => [{ ...m, id: uid(), createdAt: new Date().toISOString() }, ...p]);
-  }, []);
-  const remove = useCallback((id: string) => setItems((p) => p.filter((m) => m.id !== id)), []);
-  return { items, add, remove };
+export function useMedia() {
+  const qc = useQc();
+  const list = useServerFn(listMedia);
+  const up = useServerFn(uploadMedia);
+  const del = useServerFn(deleteMedia);
+
+  const q = useQuery({ queryKey: ["media"], queryFn: () => list(), staleTime: 30_000 });
+  const items = (q.data ?? []) as MediaItem[];
+
+  const invalidate = () => qc.invalidateQueries({ queryKey: ["media"] });
+
+  const mUp = useMutation({
+    mutationFn: async (m: { name: string; type: string; size: number; file?: File; url?: string; folder?: string }) => {
+      // Compat: se vier `file`, envia para Storage. Se vier `url` (data URI), extrai base64.
+      let dataBase64 = "";
+      if (m.file) dataBase64 = await fileToBase64(m.file);
+      else if (m.url?.startsWith("data:")) {
+        const idx = m.url.indexOf(",");
+        dataBase64 = idx >= 0 ? m.url.slice(idx + 1) : "";
+      } else {
+        throw new Error("Upload precisa de arquivo ou data URI");
+      }
+      return up({ data: { name: m.name, type: m.type, size: m.size, dataBase64, folder: m.folder ?? "" } });
+    },
+    onSuccess: invalidate,
+  });
+
+  const mDel = useMutation({ mutationFn: (id: string) => del({ data: { id } }), onSuccess: invalidate });
+
+  const add = useCallback((m: Omit<MediaItem, "id" | "createdAt"> & { file?: File }) => {
+    mUp.mutate({ name: m.name, type: m.type, size: m.size, file: m.file, url: m.url, folder: m.folder });
+  }, [mUp]);
+  const remove = useCallback((id: string) => mDel.mutate(id), [mDel]);
+
+  return { items, add, remove, uploading: mUp.isPending };
 }
 
 /* ============ TECHNOLOGIES ============ */
@@ -230,24 +211,26 @@ export type Technology = {
   icon?: string;
 };
 
-const techDefaults: Technology[] = [
-  { id: "t1", name: "React", category: "Frontend", color: "#61DAFB" },
-  { id: "t2", name: "TypeScript", category: "Language", color: "#3178C6" },
-  { id: "t3", name: "Tailwind CSS", category: "Styling", color: "#06B6D4" },
-  { id: "t4", name: "Framer Motion", category: "Animation", color: "#FF008C" },
-  { id: "t5", name: "Next.js", category: "Framework", color: "#FFFFFF" },
-  { id: "t6", name: "Supabase", category: "Backend", color: "#3ECF8E" },
-];
-
 export function useTechnologies() {
-  const [items, setItems] = useState<Technology[]>(techDefaults);
-  const [loaded, setLoaded] = useState(false);
-  useEffect(() => { setItems(load<Technology[]>(TECH_KEY, techDefaults)); setLoaded(true); }, []);
-  useEffect(() => { if (loaded) localStorage.setItem(TECH_KEY, JSON.stringify(items)); }, [items, loaded]);
+  const qc = useQc();
+  const list = useServerFn(listTechnologies);
+  const ups = useServerFn(upsertTechnology);
+  const del = useServerFn(deleteTechnology);
 
-  const add = useCallback((t: Omit<Technology, "id">) => setItems((p) => [{ ...t, id: uid() }, ...p]), []);
-  const update = useCallback((id: string, patch: Partial<Technology>) => setItems((p) => p.map((t) => t.id === id ? { ...t, ...patch } : t)), []);
-  const remove = useCallback((id: string) => setItems((p) => p.filter((t) => t.id !== id)), []);
+  const q = useQuery({ queryKey: ["technologies"], queryFn: () => list(), staleTime: 30_000 });
+  const items = (q.data ?? []) as Technology[];
+  const invalidate = () => qc.invalidateQueries({ queryKey: ["technologies"] });
+
+  const mUp = useMutation({ mutationFn: (t: any) => ups({ data: t }), onSuccess: invalidate });
+  const mDel = useMutation({ mutationFn: (id: string) => del({ data: { id } }), onSuccess: invalidate });
+
+  const add = useCallback((t: Omit<Technology, "id">) => mUp.mutate(t), [mUp]);
+  const update = useCallback((id: string, patch: Partial<Technology>) => {
+    const cur = items.find((x) => x.id === id);
+    mUp.mutate({ ...cur, ...patch, id });
+  }, [mUp, items]);
+  const remove = useCallback((id: string) => mDel.mutate(id), [mDel]);
+
   return { items, add, update, remove };
 }
 
@@ -270,22 +253,27 @@ export type Settings = {
 const settingsDefaults: Settings = {
   name: "Adriano Oliveira",
   role: "Desenvolvedor Front-End Júnior",
-  bio: "Front-End Júnior apaixonado por React, Next.js e TypeScript. Transformo ideias em interfaces modernas, responsivas e acessíveis.",
-  email: "contato@adrianodev.com",
+  bio: "",
+  email: "",
   location: "Brasil",
-  github: "",
-  linkedin: "",
-  twitter: "",
-  instagram: "",
-  githubUsername: "",
-  githubToken: "",
+  github: "", linkedin: "", twitter: "", instagram: "",
+  githubUsername: "", githubToken: "",
 };
 
 export function useSettings() {
-  const [settings, setSettings] = useState<Settings>(settingsDefaults);
-  const [loaded, setLoaded] = useState(false);
-  useEffect(() => { setSettings(load<Settings>(SETTINGS_KEY, settingsDefaults)); setLoaded(true); }, []);
-  useEffect(() => { if (loaded) localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }, [settings, loaded]);
-  const update = useCallback((patch: Partial<Settings>) => setSettings((s) => ({ ...s, ...patch })), []);
-  return { settings, update };
+  const qc = useQc();
+  const get = useServerFn(getSettings);
+  const upd = useServerFn(updateSettings);
+
+  const q = useQuery({ queryKey: ["settings"], queryFn: () => get(), staleTime: 60_000 });
+  const settings = (q.data ?? settingsDefaults) as Settings;
+
+  const mUpd = useMutation({
+    mutationFn: (patch: Partial<Settings>) => upd({ data: patch }),
+    onSuccess: (data) => { qc.setQueryData(["settings"], data); },
+  });
+
+  const update = useCallback((patch: Partial<Settings>) => mUpd.mutate(patch), [mUpd]);
+
+  return { settings, update, loaded: !q.isPending };
 }
