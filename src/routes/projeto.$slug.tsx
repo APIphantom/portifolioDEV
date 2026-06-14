@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -154,16 +154,14 @@ const RESULTS = [
 
 function ProjectPage() {
   const { slug } = Route.useParams();
-  const [project, setProject] = useState<Project | null>(null);
-  const [ready, setReady] = useState(false);
+  const fetchProject = useServerFn(getProjectBySlug);
+  const { data: project, isPending } = useQuery({
+    queryKey: ["project", slug],
+    queryFn: () => fetchProject({ data: { slug } }),
+    staleTime: 60_000,
+  });
 
-  useEffect(() => {
-    const all = readProjects();
-    setProject(all.find((p) => p.slug === slug) ?? null);
-    setReady(true);
-  }, [slug]);
-
-  if (!ready) {
+  if (isPending) {
     return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Carregando…</div>;
   }
 
