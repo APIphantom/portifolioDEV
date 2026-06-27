@@ -24,7 +24,7 @@ type Repo = {
   default_branch: string;
 };
 
-export function GitHubImportPage() {
+function GitHubImportPage() {
   const { settings, update } = useSettings();
   const { addProject } = useProjects();
   const [repos, setRepos] = useState<Repo[]>([]);

@@ -1,11 +1,16 @@
 import { motion } from "framer-motion";
 import { ArrowDown, Download, Mail } from "lucide-react";
 import { MagneticButton } from "./MagneticButton";
+import { useSettings } from "@/lib/projects-store";
 
 const TITLE_TOP = "FRONT".split("");
 const TITLE_BOT = "END".split("");
 
 export function Hero() {
+  const { settings } = useSettings();
+  const displayName = settings.name || "Adriano Oliveira";
+  const role = settings.role || "Desenvolvedor Front-End Júnior";
+
   return (
     <section
       id="home"
@@ -92,9 +97,8 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.9 }}
             className="mt-8 max-w-xl text-base md:text-lg text-muted-foreground"
           >
-            <span className="text-foreground font-medium">Sou Adriano Oliveira, Desenvolvedor Front-End Júnior.</span>{" "}
-            Transformo ideias em interfaces modernas, responsivas e acessíveis com React, Next.js,
-            TypeScript e Tailwind — focado em performance e boas práticas.
+            <span className="text-foreground font-medium">Sou {displayName}, {role}.</span>{" "}
+            {settings.bio || "Transformo ideias em interfaces modernas, responsivas e acessíveis com React, Next.js, TypeScript e Tailwind — focado em performance e boas práticas."}
           </motion.p>
 
           <motion.div
@@ -136,7 +140,7 @@ export function Hero() {
         >
           <div className="border-l-2 border-primary pl-4">
             <div className="text-muted-foreground">Portfólio / V.2026</div>
-            <div className="text-foreground font-bold mt-1">Front-End Júnior — Em busca de oportunidade</div>
+            <div className="text-foreground font-bold mt-1">{role}</div>
           </div>
           <div className="grid grid-cols-2 gap-px bg-border rounded-lg overflow-hidden">
             {[

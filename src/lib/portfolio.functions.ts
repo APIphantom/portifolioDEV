@@ -130,7 +130,7 @@ export const listProjects = createServerFn({ method: "GET" }).handler(async () =
 });
 
 export const getProjectBySlug = createServerFn({ method: "GET" })
-  .inputValidator((d: { slug: string }) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .validator((d: { slug: string }) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
     const sb = await admin();
     const { data: row, error } = await sb.from("projects").select("*").eq("slug", data.slug).maybeSingle();
@@ -142,7 +142,7 @@ const projectInputSchema = z.object({ id: z.string().uuid().optional() }).passth
 
 export const upsertProject = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: any) => projectInputSchema.parse(d))
+  .validator((d: any) => projectInputSchema.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const sb = await admin();
@@ -160,7 +160,7 @@ export const upsertProject = createServerFn({ method: "POST" })
 
 export const deleteProject = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const sb = await admin();
@@ -171,7 +171,7 @@ export const deleteProject = createServerFn({ method: "POST" })
 
 export const duplicateProjectFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const sb = await admin();
@@ -206,7 +206,7 @@ const storylineInput = z.object({
 
 export const upsertStoryline = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: any) => storylineInput.parse(d))
+  .validator((d: any) => storylineInput.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const sb = await admin();
@@ -223,7 +223,7 @@ export const upsertStoryline = createServerFn({ method: "POST" })
 
 export const deleteStoryline = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const sb = await admin();
@@ -251,7 +251,7 @@ const techInput = z.object({
 
 export const upsertTechnology = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: any) => techInput.parse(d))
+  .validator((d: any) => techInput.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const sb = await admin();
@@ -268,7 +268,7 @@ export const upsertTechnology = createServerFn({ method: "POST" })
 
 export const deleteTechnology = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const sb = await admin();
@@ -295,7 +295,7 @@ const uploadInput = z.object({
 
 export const uploadMedia = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: any) => uploadInput.parse(d))
+  .validator((d: any) => uploadInput.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const sb = await admin();
@@ -315,7 +315,7 @@ export const uploadMedia = createServerFn({ method: "POST" })
 
 export const deleteMedia = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
+  .validator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const sb = await admin();
@@ -351,7 +351,7 @@ const settingsInput = z.object({
 
 export const updateSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: any) => settingsInput.parse(d))
+  .validator((d: any) => settingsInput.parse(d))
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const sb = await admin();
@@ -381,7 +381,7 @@ const contactInput = z.object({
 });
 
 export const submitContact = createServerFn({ method: "POST" })
-  .inputValidator((d: any) => contactInput.parse(d))
+  .validator((d: any) => contactInput.parse(d))
   .handler(async ({ data }) => {
     const sb = await admin();
     let ip: string | null = null;

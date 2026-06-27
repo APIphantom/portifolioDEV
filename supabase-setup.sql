@@ -71,15 +71,6 @@ alter table public.technologies enable row level security;
 grant select on public.technologies to anon, authenticated;
 grant all on public.technologies to service_role;
 
-insert into public.technologies (name, category, color) values
-  ('React','Frontend','#61DAFB'),
-  ('TypeScript','Language','#3178C6'),
-  ('Tailwind CSS','Styling','#06B6D4'),
-  ('Framer Motion','Animation','#FF008C'),
-  ('Next.js','Framework','#FFFFFF'),
-  ('Supabase','Backend','#3ECF8E')
-on conflict do nothing;
-
 -- ---------- STORYLINE ----------
 create table if not exists public.storyline_items (
   id uuid primary key default gen_random_uuid(),
@@ -96,17 +87,6 @@ create table if not exists public.storyline_items (
 alter table public.storyline_items enable row level security;
 grant select on public.storyline_items to anon, authenticated;
 grant all on public.storyline_items to service_role;
-
-insert into public.storyline_items (year, title, subtitle, description, icon, badge, sort_order) values
-  ('2019','Início','Primeira linha de código','Curiosidade virou obsessão. HTML e CSS abriram a porta de um universo novo.','sparkles','Origin',1),
-  ('2020','Faculdade','Fundamentos sólidos','Análise e Desenvolvimento de Sistemas. Lógica, algoritmos e a base que sustenta tudo.','graduation','Education',2),
-  ('2021','Primeiros Projetos','Mãos no código','Landing pages, sites institucionais e o primeiro contato com clientes reais.','rocket','Build',3),
-  ('2022','React','Componentização','Pensar em componentes mudou minha forma de construir interfaces para sempre.','atom','Frontend',4),
-  ('2023','TypeScript','Código robusto','Tipagem forte, refactors seguros e produtividade em escala.','filecode','DX',5),
-  ('2024','Next.js','Full-stack mindset','SSR, edge functions e performance como prioridade desde o primeiro commit.','triangle','Framework',6),
-  ('2025','Portfólio Atual','Identidade própria','STVX/DEV — código com estética, performance e voz autoral.','layers','Now',7),
-  ('2026+','Próximo Nível','Sem teto','WebGL, IA aplicada ao front-end e produtos com identidade cinematográfica.','target','Next',8)
-on conflict do nothing;
 
 -- ---------- MEDIA ----------
 create table if not exists public.media (
@@ -162,25 +142,6 @@ create table if not exists public.projects (
 alter table public.projects enable row level security;
 grant select on public.projects to anon, authenticated;
 grant all on public.projects to service_role;
-
-insert into public.projects (slug, title, description, long_description, tech, category, github, demo, objective, problem, solution, process, result, publication)
-values
-  ('neon-commerce','NEON/COMMERCE','Storefront experimental para uma marca de streetwear com checkout fluido.',
-   'Plataforma de e-commerce construída do zero com foco em performance, identidade visual e microinterações cinematográficas no checkout.',
-   '{"React","Tailwind","Framer Motion","Stripe"}','ecommerce','https://github.com','https://example.com',
-   'Criar uma experiência de compra que transmita o DNA de uma marca premium.',
-   'Storefronts genéricos diluem a identidade e reduzem percepção de valor.',
-   'Layout editorial, transições com Framer Motion e checkout em 2 steps.',
-   'Wireframe em Figma, design tokens, build em React + Vite, testes com usuários reais.',
-   'Conversão +38%, tempo médio na página +52%, share orgânico em alta.',
-   '{"status":"published","visibility":"public","featured":true}'::jsonb),
-  ('grid-sound','GRID/SOUND','Player de música minimalista com visualização em grid e modo dark premium.',
-   null,'{"React","TypeScript","Web Audio API"}','experiment',null,null,null,null,null,null,null,
-   '{"status":"published","visibility":"public"}'::jsonb),
-  ('asphalt-os','ASPHALT/OS','Dashboard techwear para monitoramento de frota urbana em tempo real.',
-   null,'{"Next.js","Tailwind","D3","Supabase"}','web',null,null,null,null,null,null,null,
-   '{"status":"draft","visibility":"private"}'::jsonb)
-on conflict (slug) do nothing;
 
 -- ---------- CONTACT LEADS ----------
 create table if not exists public.contact_leads (

@@ -7,13 +7,21 @@ import {
   validateContactForm,
   type ContactInput,
 } from "@/services/contact";
+import { useSettings } from "@/lib/projects-store";
 
 type Errors = Partial<Record<keyof ContactInput, string>>;
 type Status = "idle" | "loading" | "success" | "error";
 
 const INITIAL: ContactInput = { name: "", email: "", message: "" };
 
+function toAbsoluteUrl(url: string) {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `https://${url}`;
+}
+
 export function Contact() {
+  const { settings } = useSettings();
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<Errors>({});
   const [values, setValues] = useState<ContactInput>(INITIAL);
@@ -47,6 +55,12 @@ export function Contact() {
   const isLoading = status === "loading";
   const isSuccess = status === "success";
 
+  const socialLinks = [
+    { Icon: Github, label: settings.github || "GitHub não configurado", href: toAbsoluteUrl(settings.github) },
+    { Icon: Linkedin, label: settings.linkedin || "LinkedIn não configurado", href: toAbsoluteUrl(settings.linkedin) },
+    { Icon: Instagram, label: settings.instagram || "Instagram não configurado", href: toAbsoluteUrl(settings.instagram) },
+  ].filter((item) => item.href);
+
   return (
     <section
       id="contato"
@@ -60,15 +74,11 @@ export function Contact() {
             Vamos<br />conversar<br /><span className="text-primary">.</span>
           </h2>
           <p className="mt-6 text-muted-foreground max-w-md">
-            Estou em busca da minha primeira oportunidade como Front-End Júnior. Aberto a posições
+            Estou em busca da minha primeira oportunidade como {settings.role || "Front-End Júnior"}. Aberto a posições
             full-time, estágio, freelance e projetos colaborativos. Respondo rápido.
           </p>
           <div className="mt-10 space-y-3">
-            {[
-              { Icon: Github, label: "github.com/adrianooliveira", href: "https://github.com" },
-              { Icon: Linkedin, label: "linkedin.com/in/adrianooliveira", href: "https://linkedin.com" },
-              { Icon: Instagram, label: "@adrianooliveira.dev", href: "https://instagram.com" },
-            ].map(({ Icon, label, href }) => (
+            {socialLinks.map(({ Icon, label, href }) => (
               <a
                 key={label}
                 href={href}
@@ -84,6 +94,9 @@ export function Contact() {
                 {label}
               </a>
             ))}
+            {socialLinks.length === 0 && (
+              <p className="text-sm text-muted-foreground">Configure suas redes no painel admin em Configuracoes.</p>
+            )}
           </div>
         </div>
 

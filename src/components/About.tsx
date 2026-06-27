@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Code2, Palette, Smartphone, Zap } from "lucide-react";
+import { useSettings } from "@/lib/projects-store";
 
 const cards = [
   { icon: Code2, title: "Clean Code", text: "React, TypeScript e arquitetura componentizada com foco em manutenibilidade." },
@@ -9,6 +10,9 @@ const cards = [
 ];
 
 export function About() {
+  const { settings } = useSettings();
+  const displayName = settings.name || "Adriano Oliveira";
+
   return (
     <section id="sobre" className="relative py-32 px-6 lg:px-10" aria-labelledby="sobre-title">
       <div className="mx-auto max-w-7xl grid lg:grid-cols-12 gap-12">
@@ -57,10 +61,13 @@ export function About() {
             viewport={{ once: true }}
             className="text-xl md:text-2xl text-muted-foreground leading-relaxed"
           >
-            Sou <span className="text-foreground font-medium">Adriano Oliveira</span>, apaixonado por
-            transformar ideias em experiências digitais modernas. Atualmente estudo
-            <span className="text-foreground"> React, Next.js e TypeScript</span> a fundo, construo
-            projetos pessoais para fixar o aprendizado e busco minha primeira oportunidade no mercado.
+            Sou <span className="text-foreground font-medium">{displayName}</span>, apaixonado por
+            transformar ideias em experiências digitais modernas.
+            {settings.bio ? (
+              <span> {settings.bio}</span>
+            ) : (
+              <span> Atualmente estudo <span className="text-foreground">React, Next.js e TypeScript</span> a fundo, construo projetos pessoais para fixar o aprendizado e busco minha primeira oportunidade no mercado.</span>
+            )}
           </motion.p>
 
           <motion.p

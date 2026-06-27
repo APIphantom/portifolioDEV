@@ -1,9 +1,17 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function Manifesto() {
   const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const { scrollYProgress } = useScroll(
+    mounted ? { target: ref, offset: ["start end", "end start"] } : undefined,
+  );
   const y = useTransform(scrollYProgress, [0, 1], [80, -80]);
   const yFast = useTransform(scrollYProgress, [0, 1], [150, -150]);
 

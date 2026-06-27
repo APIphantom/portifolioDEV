@@ -4,11 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { motion, useInView } from "framer-motion";
 import {
-  ArrowLeft, ArrowRight, Github, ExternalLink, ImageIcon, Play, CheckCircle2,
-  Search, PencilRuler, Palette, Code2, TestTube2, Rocket, CircleDot, Clock,
-  Briefcase, Tag, User, Calendar, Zap, ShieldCheck, Layers, Database, Cloud,
-  BarChart3, Boxes, Server, CreditCard, HardDrive, Lock, Smartphone, Tablet,
-  Monitor, Gauge, TrendingUp, TrendingDown, Target,
+  ArrowLeft, ArrowRight, Github, ExternalLink, ImageIcon, Play, CircleDot,
+  Clock, Briefcase, Tag, User, Calendar, Smartphone, Tablet, Monitor, Target,
 } from "lucide-react";
 import { type Project, CATEGORIES } from "@/lib/projects-store";
 import { getProjectBySlug } from "@/lib/portfolio.functions";
@@ -88,67 +85,14 @@ function Counter({ to, suffix = "", prefix = "" }: { to: number; suffix?: string
 function getMeta(project: Project) {
   const cat = CATEGORIES.find((c) => c.value === project.category)?.label ?? project.category;
   return {
-    status: "Concluído",
-    duration: "3 Semanas",
-    role: "Full Stack Developer",
+    status: project.publication?.status === "published" ? "Publicado" : project.publication?.status === "archived" ? "Arquivado" : "Rascunho",
+    duration: project.duration || "-",
+    role: project.role || "-",
     type: cat,
-    client: "Projeto Conceitual",
-    year: "2025",
+    client: project.client || "-",
+    year: project.year || "-",
   };
 }
-
-const ROLE_ITEMS = [
-  "UX Research",
-  "UI/UX Design",
-  "Frontend Development",
-  "Backend Development",
-  "Database Modeling",
-  "Performance Optimization",
-  "Deploy & Monitoring",
-];
-
-const TIMELINE = [
-  { label: "Pesquisa", Icon: Search },
-  { label: "Wireframe", Icon: PencilRuler },
-  { label: "UI Design", Icon: Palette },
-  { label: "Desenvolvimento", Icon: Code2 },
-  { label: "Testes", Icon: TestTube2 },
-  { label: "Deploy", Icon: Rocket },
-];
-
-const CHALLENGES = [
-  { Icon: Zap, text: "Implementar animações complexas sem prejudicar a performance." },
-  { Icon: ShieldCheck, text: "Checkout seguro e otimizado com Stripe em 2 etapas." },
-  { Icon: Layers, text: "Lazy loading de componentes e imagens para melhor performance." },
-  { Icon: Boxes, text: "Gerenciamento eficiente de estado entre SSR e CSR." },
-];
-
-const ARCH_FLOW = [
-  { label: "UI Layer", sub: "(React + Tailwind)", Icon: Palette },
-  { label: "State Management", sub: "(Zustand)", Icon: Layers },
-  { label: "API Layer", sub: "(Next.js API Routes)", Icon: Server },
-  { label: "Database", sub: "(Supabase)", Icon: Database },
-];
-const ARCH_SIDE = [
-  { label: "Auth", sub: "(Supabase Auth)", Icon: Lock },
-  { label: "Payments", sub: "(Stripe)", Icon: CreditCard },
-  { label: "Storage", sub: "(Supabase Storage)", Icon: HardDrive },
-];
-
-const STACK_GROUPS = [
-  { title: "Frontend", Icon: Palette, items: ["React", "Next.js", "Tailwind CSS", "Framer Motion", "TypeScript"] },
-  { title: "Backend", Icon: Server, items: ["Node.js", "Express", "Stripe"] },
-  { title: "Database", Icon: Database, items: ["Supabase"] },
-  { title: "Infra", Icon: Cloud, items: ["Vercel", "Cloudflare"] },
-  { title: "Analytics", Icon: BarChart3, items: ["Google Analytics", "PostHog"] },
-];
-
-const RESULTS = [
-  { Icon: TrendingUp, value: 38, suffix: "%", prefix: "+", label: "Aumento na conversão" },
-  { Icon: Clock, value: 52, suffix: "%", prefix: "+", label: "Tempo médio na página" },
-  { Icon: TrendingDown, value: 31, suffix: "%", prefix: "-", label: "Taxa de rejeição" },
-  { Icon: Gauge, value: 95, suffix: "/100", prefix: "", label: "Performance Lighthouse" },
-];
 
 /* ---------- page ---------- */
 
@@ -200,6 +144,22 @@ function ProjectPage() {
     { n: "04", k: "Processo", v: project.process },
     { n: "05", k: "Resultado", v: project.result },
   ].filter((s) => s.v);
+
+  const stackGroups = project.tech.length > 0
+    ? [{ title: "Tecnologias", items: project.tech }]
+    : [];
+
+  const results = (project.metrics ?? []).map((m) => {
+    const parsed = Number(String(m.value ?? "").replace(/[^0-9.-]/g, ""));
+    return {
+      label: m.title,
+      raw: m.value,
+      value: Number.isFinite(parsed) ? parsed : null,
+      prefix: m.prefix ?? "",
+      suffix: m.suffix ?? "",
+      description: m.description ?? "",
+    };
+  }).filter((m) => m.label);
 
   return (
     <motion.div
@@ -395,12 +355,10 @@ function ProjectPage() {
       <section className="px-6 lg:px-10 mt-24">
         <motion.div {...fadeUp} className="mx-auto max-w-7xl rounded-2xl border border-border bg-card/40 p-6 md:p-8">
           <SectionLabel n="STACK" title="Tecnológica" />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            {STACK_GROUPS.map(({ title, Icon, items }) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {stackGroups.map(({ title, items }) => (
               <div key={title} className="rounded-xl border border-border bg-background/60 p-5">
-                <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-primary mb-4">
-                  <Icon className="size-3.5" /> {title}
-                </div>
+                <div className="text-[10px] uppercase tracking-[0.3em] text-primary mb-4">{title}</div>
                 <ul className="space-y-2">
                   {items.map((it) => (
                     <li key={it} className="flex items-center gap-2 text-sm">
@@ -412,137 +370,21 @@ function ProjectPage() {
               </div>
             ))}
           </div>
+          {stackGroups.length === 0 && (
+            <div className="text-sm text-muted-foreground text-center py-8 border border-dashed border-border rounded-xl">
+              Nenhuma tecnologia cadastrada para este projeto.
+            </div>
+          )}
         </motion.div>
       </section>
 
-      {/* ===== ROLE + TIMELINE ===== */}
-      <section className="px-6 lg:px-10 mt-8">
-        <div className="mx-auto max-w-7xl grid lg:grid-cols-12 gap-6">
-          {/* Role */}
-          <motion.div {...fadeUp} className="lg:col-span-4 rounded-2xl border border-border bg-card/40 p-6 md:p-8">
-            <SectionLabel n="ROLE" title="Minha Participação" />
-            <ul className="space-y-3">
-              {ROLE_ITEMS.map((item, i) => (
-                <motion.li
-                  key={item}
-                  initial={{ opacity: 0, x: -10 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.05 * i }}
-                  className="flex items-center gap-3 text-sm"
-                >
-                  <CheckCircle2 className="size-4 text-primary shrink-0" />
-                  {item}
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
-
-          {/* Timeline */}
-          <motion.div {...fadeUp} className="lg:col-span-8 rounded-2xl border border-border bg-card/40 p-6 md:p-8">
-            <SectionLabel n="TIMELINE" title="do Projeto" />
-            <div className="flex flex-col lg:flex-row lg:items-start gap-6 lg:gap-2">
-              {TIMELINE.map((step, i) => (
-                <div key={step.label} className="flex lg:flex-col items-center gap-4 lg:gap-3 flex-1">
-                  <motion.div
-                    initial={{ scale: 0, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.1 * i, type: "spring", stiffness: 200 }}
-                    className="size-14 rounded-xl border border-primary/40 bg-primary/5 flex items-center justify-center text-primary shrink-0"
-                  >
-                    <step.Icon className="size-6" />
-                  </motion.div>
-                  <div className="lg:text-center">
-                    <div className="text-[10px] font-mono text-primary tracking-widest">0{i + 1}</div>
-                    <div className="text-sm font-bold">{step.label}</div>
-                  </div>
-                  {i < TIMELINE.length - 1 && (
-                    <div className="hidden lg:block flex-1 h-px border-t border-dashed border-primary/30 self-center mt-[-1.5rem]" />
-                  )}
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ===== CHALLENGES + ARCHITECTURE ===== */}
-      <section className="px-6 lg:px-10 mt-8">
-        <div className="mx-auto max-w-7xl grid lg:grid-cols-12 gap-6">
-          {/* Challenges */}
-          <motion.div {...fadeUp} className="lg:col-span-5 rounded-2xl border border-border bg-card/40 p-6 md:p-8">
-            <SectionLabel n="CHALLENGES" title="Desafios Técnicos" />
-            <ul className="space-y-4">
-              {CHALLENGES.map((c, i) => (
-                <motion.li
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.08 * i }}
-                  className="flex gap-3 p-3 rounded-lg hover:bg-primary/5 transition-colors"
-                >
-                  <div className="size-8 rounded-md border border-border bg-background flex items-center justify-center shrink-0 text-primary">
-                    <c.Icon className="size-4" />
-                  </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{c.text}</p>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
-
-          {/* Architecture */}
-          <motion.div {...fadeUp} className="lg:col-span-7 rounded-2xl border border-border bg-card/40 p-6 md:p-8">
-            <SectionLabel n="ARCH" title="Arquitetura" />
-            <div className="space-y-6">
-              <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-2">
-                {ARCH_FLOW.map((b, i) => (
-                  <div key={b.label} className="flex md:flex-1 items-center gap-2">
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.1 * i }}
-                      className="flex-1 rounded-lg border border-border bg-background p-3 text-center hover:border-primary transition-colors"
-                    >
-                      <b.Icon className="size-4 text-primary mx-auto mb-1.5" />
-                      <div className="text-xs font-bold">{b.label}</div>
-                      <div className="text-[10px] text-muted-foreground">{b.sub}</div>
-                    </motion.div>
-                    {i < ARCH_FLOW.length - 1 && (
-                      <ArrowRight className="size-4 text-primary/50 shrink-0 rotate-90 md:rotate-0" />
-                    )}
-                  </div>
-                ))}
-              </div>
-              <div className="grid grid-cols-3 gap-3">
-                {ARCH_SIDE.map((b, i) => (
-                  <motion.div
-                    key={b.label}
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.1 * i + 0.3 }}
-                    className="rounded-lg border border-dashed border-primary/30 bg-background/50 p-3 text-center"
-                  >
-                    <b.Icon className="size-4 text-primary mx-auto mb-1.5" />
-                    <div className="text-xs font-bold">{b.label}</div>
-                    <div className="text-[10px] text-muted-foreground">{b.sub}</div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
       {/* ===== RESULTS ===== */}
+      {results.length > 0 && (
       <section className="px-6 lg:px-10 mt-8">
         <motion.div {...fadeUp} className="mx-auto max-w-7xl rounded-2xl border border-border bg-card/40 p-6 md:p-8">
           <SectionLabel n="RESULTS" title="Resultados" />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {RESULTS.map((r, i) => (
+            {results.map((r, i) => (
               <motion.div
                 key={r.label}
                 initial={{ opacity: 0, y: 20 }}
@@ -551,16 +393,19 @@ function ProjectPage() {
                 transition={{ delay: 0.08 * i }}
                 className="rounded-xl border border-border bg-background/60 p-6 text-center hover:border-primary hover:glow-neon transition-all group"
               >
-                <r.Icon className="size-6 text-primary mx-auto mb-3 group-hover:scale-110 transition-transform" />
                 <div className="display text-4xl md:text-5xl text-primary">
-                  <Counter to={r.value} prefix={r.prefix} suffix={r.suffix} />
+                  {r.value !== null
+                    ? <Counter to={r.value} prefix={r.prefix} suffix={r.suffix} />
+                    : `${r.prefix}${r.raw}${r.suffix}`}
                 </div>
                 <div className="text-xs uppercase tracking-widest text-muted-foreground mt-2">{r.label}</div>
+                {r.description && <div className="text-xs text-muted-foreground mt-2">{r.description}</div>}
               </motion.div>
             ))}
           </div>
         </motion.div>
       </section>
+      )}
 
       {/* ===== RESPONSIVE EXPERIENCE ===== */}
       <section className="px-6 lg:px-10 mt-8">
