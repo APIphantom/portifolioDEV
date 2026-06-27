@@ -98,33 +98,66 @@ function projectToRow(p: any) {
 
 function rowToStoryline(r: any) {
   return {
-    id: r.id, year: r.year, title: r.title, subtitle: r.subtitle ?? "",
-    description: r.description ?? "", icon: r.icon, badge: r.badge ?? "",
-    order: r.sort_order ?? 0, active: r.active ?? true,
+    id: r.id,
+    year: r.year,
+    title: r.title,
+    subtitle: r.subtitle ?? "",
+    description: r.description ?? "",
+    icon: r.icon,
+    badge: r.badge ?? "",
+    order: r.sort_order ?? 0,
+    active: r.active ?? true,
   };
 }
 
 function rowToTech(r: any) {
-  return { id: r.id, name: r.name, category: r.category ?? "", color: r.color ?? undefined, icon: r.icon ?? undefined, url: r.url ?? undefined };
+  return {
+    id: r.id,
+    name: r.name,
+    category: r.category ?? "",
+    color: r.color ?? undefined,
+    icon: r.icon ?? undefined,
+    url: r.url ?? undefined,
+  };
 }
 
 function rowToMedia(r: any) {
-  return { id: r.id, name: r.name, url: r.url, type: r.type, size: Number(r.size ?? 0), folder: r.folder ?? "", createdAt: r.created_at };
+  return {
+    id: r.id,
+    name: r.name,
+    url: r.url,
+    type: r.type,
+    size: Number(r.size ?? 0),
+    folder: r.folder ?? "",
+    createdAt: r.created_at,
+  };
 }
 
 function rowToSettings(r: any) {
   return {
-    name: r?.name ?? "", role: r?.role ?? "", bio: r?.bio ?? "",
-    email: r?.email ?? "", location: r?.location ?? "",
-    github: r?.github ?? "", linkedin: r?.linkedin ?? "", twitter: r?.twitter ?? "", instagram: r?.instagram ?? "",
-    githubToken: r?.github_token ?? "", githubUsername: r?.github_username ?? "", theme: r?.theme ?? undefined,
+    name: r?.name ?? "",
+    role: r?.role ?? "",
+    bio: r?.bio ?? "",
+    email: r?.email ?? "",
+    location: r?.location ?? "",
+    github: r?.github ?? "",
+    linkedin: r?.linkedin ?? "",
+    twitter: r?.twitter ?? "",
+    instagram: r?.instagram ?? "",
+    githubToken: r?.github_token ?? "",
+    githubUsername: r?.github_username ?? "",
+    theme: r?.theme ?? undefined,
   };
 }
 
 /* ===================== PROJECTS ===================== */
 export const listProjects = createServerFn({ method: "GET" }).handler(async () => {
   const sb = await admin();
-  const { data, error } = await sb.from("projects").select("*").order("display_order", { ascending: true }).order("created_at", { ascending: false });
+  const { data, error } = await sb
+    .from("projects")
+    .select("*")
+    .order("display_order", { ascending: true })
+    .order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
   return (data ?? []).map(rowToProject);
 });
@@ -133,7 +166,11 @@ export const getProjectBySlug = createServerFn({ method: "GET" })
   .validator((d: { slug: string }) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
     const sb = await admin();
-    const { data: row, error } = await sb.from("projects").select("*").eq("slug", data.slug).maybeSingle();
+    const { data: row, error } = await sb
+      .from("projects")
+      .select("*")
+      .eq("slug", data.slug)
+      .maybeSingle();
     if (error) throw new Error(error.message);
     return row ? rowToProject(row) : null;
   });
@@ -148,7 +185,12 @@ export const upsertProject = createServerFn({ method: "POST" })
     const sb = await admin();
     const row = projectToRow(data);
     if (data.id) {
-      const { data: out, error } = await sb.from("projects").update(row).eq("id", data.id).select("*").single();
+      const { data: out, error } = await sb
+        .from("projects")
+        .update(row)
+        .eq("id", data.id)
+        .select("*")
+        .single();
       if (error) throw new Error(error.message);
       return rowToProject(out);
     } else {
@@ -178,7 +220,12 @@ export const duplicateProjectFn = createServerFn({ method: "POST" })
     const { data: orig, error } = await sb.from("projects").select("*").eq("id", data.id).single();
     if (error || !orig) throw new Error(error?.message ?? "not found");
     const { id, created_at, ...rest } = orig;
-    const copy = { ...rest, slug: `${orig.slug}-copy-${Date.now().toString(36)}`, title: `${orig.title} (cópia)`, updated_at: new Date().toISOString() };
+    const copy = {
+      ...rest,
+      slug: `${orig.slug}-copy-${Date.now().toString(36)}`,
+      title: `${orig.title} (cópia)`,
+      updated_at: new Date().toISOString(),
+    };
     const { data: out, error: e2 } = await sb.from("projects").insert(copy).select("*").single();
     if (e2) throw new Error(e2.message);
     return rowToProject(out);
@@ -187,7 +234,10 @@ export const duplicateProjectFn = createServerFn({ method: "POST" })
 /* ===================== STORYLINE ===================== */
 export const listStoryline = createServerFn({ method: "GET" }).handler(async () => {
   const sb = await admin();
-  const { data, error } = await sb.from("storyline_items").select("*").order("sort_order", { ascending: true });
+  const { data, error } = await sb
+    .from("storyline_items")
+    .select("*")
+    .order("sort_order", { ascending: true });
   if (error) throw new Error(error.message);
   return (data ?? []).map(rowToStoryline);
 });
@@ -210,9 +260,23 @@ export const upsertStoryline = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const sb = await admin();
-    const row = { year: data.year, title: data.title, subtitle: data.subtitle, description: data.description, icon: data.icon, badge: data.badge, sort_order: data.order, active: data.active };
+    const row = {
+      year: data.year,
+      title: data.title,
+      subtitle: data.subtitle,
+      description: data.description,
+      icon: data.icon,
+      badge: data.badge,
+      sort_order: data.order,
+      active: data.active,
+    };
     if (data.id) {
-      const { data: out, error } = await sb.from("storyline_items").update(row).eq("id", data.id).select("*").single();
+      const { data: out, error } = await sb
+        .from("storyline_items")
+        .update(row)
+        .eq("id", data.id)
+        .select("*")
+        .single();
       if (error) throw new Error(error.message);
       return rowToStoryline(out);
     }
@@ -235,7 +299,11 @@ export const deleteStoryline = createServerFn({ method: "POST" })
 /* ===================== TECHNOLOGIES ===================== */
 export const listTechnologies = createServerFn({ method: "GET" }).handler(async () => {
   const sb = await admin();
-  const { data, error } = await sb.from("technologies").select("*").order("sort_order", { ascending: true }).order("name", { ascending: true });
+  const { data, error } = await sb
+    .from("technologies")
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .order("name", { ascending: true });
   if (error) throw new Error(error.message);
   return (data ?? []).map(rowToTech);
 });
@@ -255,9 +323,20 @@ export const upsertTechnology = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const sb = await admin();
-    const row = { name: data.name, category: data.category, color: data.color ?? null, icon: data.icon ?? null, url: data.url || null };
+    const row = {
+      name: data.name,
+      category: data.category,
+      color: data.color ?? null,
+      icon: data.icon ?? null,
+      url: data.url || null,
+    };
     if (data.id) {
-      const { data: out, error } = await sb.from("technologies").update(row).eq("id", data.id).select("*").single();
+      const { data: out, error } = await sb
+        .from("technologies")
+        .update(row)
+        .eq("id", data.id)
+        .select("*")
+        .single();
       if (error) throw new Error(error.message);
       return rowToTech(out);
     }
@@ -280,7 +359,11 @@ export const deleteTechnology = createServerFn({ method: "POST" })
 /* ===================== MEDIA ===================== */
 export const listMedia = createServerFn({ method: "GET" }).handler(async () => {
   const sb = await admin();
-  const { data, error } = await sb.from("media").select("*").order("created_at", { ascending: false }).limit(500);
+  const { data, error } = await sb
+    .from("media")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(500);
   if (error) throw new Error(error.message);
   return (data ?? []).map(rowToMedia);
 });
@@ -288,7 +371,11 @@ export const listMedia = createServerFn({ method: "GET" }).handler(async () => {
 const uploadInput = z.object({
   name: z.string().min(1).max(200),
   type: z.string().min(1).max(120),
-  size: z.number().int().nonnegative().max(25 * 1024 * 1024), // 25MB
+  size: z
+    .number()
+    .int()
+    .nonnegative()
+    .max(25 * 1024 * 1024), // 25MB
   dataBase64: z.string().min(1), // sem prefixo data:
   folder: z.string().max(80).optional().default(""),
 });
@@ -303,11 +390,19 @@ export const uploadMedia = createServerFn({ method: "POST" })
     const path = `${(data.folder || "uploads").replace(/[^a-zA-Z0-9/_-]+/g, "")}/${Date.now()}_${safeName}`;
     const bin = Uint8Array.from(atob(data.dataBase64), (c) => c.charCodeAt(0));
     const { error: upErr } = await sb.storage.from("media").upload(path, bin, {
-      contentType: data.type, upsert: false,
+      contentType: data.type,
+      upsert: false,
     });
     if (upErr) throw new Error(upErr.message);
     const { data: pub } = sb.storage.from("media").getPublicUrl(path);
-    const row = { name: data.name, url: pub.publicUrl, storage_path: path, type: data.type, size: data.size, folder: data.folder ?? "" };
+    const row = {
+      name: data.name,
+      url: pub.publicUrl,
+      storage_path: path,
+      type: data.type,
+      size: data.size,
+      folder: data.folder ?? "",
+    };
     const { data: out, error } = await sb.from("media").insert(row).select("*").single();
     if (error) throw new Error(error.message);
     return rowToMedia(out);
@@ -319,7 +414,11 @@ export const deleteMedia = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const sb = await admin();
-    const { data: row } = await sb.from("media").select("storage_path").eq("id", data.id).maybeSingle();
+    const { data: row } = await sb
+      .from("media")
+      .select("storage_path")
+      .eq("id", data.id)
+      .maybeSingle();
     if (row?.storage_path) await sb.storage.from("media").remove([row.storage_path]);
     const { error } = await sb.from("media").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
@@ -386,10 +485,18 @@ export const submitContact = createServerFn({ method: "POST" })
     const sb = await admin();
     let ip: string | null = null;
     let ua: string | null = null;
-    try { ip = getRequestIP({ xForwardedFor: true }) ?? null; } catch {}
-    try { ua = getRequestHeader("user-agent") ?? null; } catch {}
+    try {
+      ip = getRequestIP({ xForwardedFor: true }) ?? null;
+    } catch {}
+    try {
+      ua = getRequestHeader("user-agent") ?? null;
+    } catch {}
     const { error } = await sb.from("contact_leads").insert({
-      name: data.name, email: data.email, message: data.message, ip, user_agent: ua,
+      name: data.name,
+      email: data.email,
+      message: data.message,
+      ip,
+      user_agent: ua,
     });
     if (error) throw new Error(error.message);
     return { ok: true as const };
@@ -400,7 +507,11 @@ export const listContactLeads = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     await assertAdmin(context);
     const sb = await admin();
-    const { data, error } = await sb.from("contact_leads").select("*").order("created_at", { ascending: false }).limit(200);
+    const { data, error } = await sb
+      .from("contact_leads")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200);
     if (error) throw new Error(error.message);
     return data ?? [];
   });

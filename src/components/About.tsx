@@ -3,10 +3,26 @@ import { Code2, Palette, Smartphone, Zap } from "lucide-react";
 import { useSettings } from "@/lib/projects-store";
 
 const cards = [
-  { icon: Code2, title: "Clean Code", text: "React, TypeScript e arquitetura componentizada com foco em manutenibilidade." },
-  { icon: Palette, title: "UI Cuidada", text: "Interfaces com hierarquia clara, atenção ao detalhe e fidelidade ao design." },
-  { icon: Smartphone, title: "Mobile-First", text: "Experiências fluidas em qualquer dispositivo, do mobile ao desktop." },
-  { icon: Zap, title: "Performance", text: "Carregamento rápido, lazy loading e animações suaves sem sacrificar UX." },
+  {
+    icon: Code2,
+    title: "Clean Code",
+    text: "React, TypeScript e arquitetura componentizada com foco em manutenibilidade.",
+  },
+  {
+    icon: Palette,
+    title: "UI Cuidada",
+    text: "Interfaces com hierarquia clara, atenção ao detalhe e fidelidade ao design.",
+  },
+  {
+    icon: Smartphone,
+    title: "Mobile-First",
+    text: "Experiências fluidas em qualquer dispositivo, do mobile ao desktop.",
+  },
+  {
+    icon: Zap,
+    title: "Performance",
+    text: "Carregamento rápido, lazy loading e animações suaves sem sacrificar UX.",
+  },
 ];
 
 export function About() {
@@ -23,7 +39,9 @@ export function About() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
           >
-            <div className="text-xs uppercase tracking-[0.3em] text-primary mb-6">// 01 — Sobre mim</div>
+            <div className="text-xs uppercase tracking-[0.3em] text-primary mb-6">
+              // 01 — Sobre mim
+            </div>
             <h2 id="sobre-title" className="display text-5xl md:text-7xl">
               Front-End
               <br />
@@ -66,7 +84,13 @@ export function About() {
             {settings.bio ? (
               <span> {settings.bio}</span>
             ) : (
-              <span> Atualmente estudo <span className="text-foreground">React, Next.js e TypeScript</span> a fundo, construo projetos pessoais para fixar o aprendizado e busco minha primeira oportunidade no mercado.</span>
+              <span>
+                {" "}
+                Atualmente estudo{" "}
+                <span className="text-foreground">React, Next.js e TypeScript</span> a fundo,
+                construo projetos pessoais para fixar o aprendizado e busco minha primeira
+                oportunidade no mercado.
+              </span>
             )}
           </motion.p>
 
@@ -92,7 +116,10 @@ export function About() {
                 transition={{ delay: 0.1 * i }}
                 className="group p-6 rounded-2xl border border-border bg-card hover:border-primary/50 transition-colors relative overflow-hidden"
               >
-                <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-primary/0 group-hover:bg-primary/10 blur-2xl transition-all" aria-hidden="true" />
+                <div
+                  className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-primary/0 group-hover:bg-primary/10 blur-2xl transition-all"
+                  aria-hidden="true"
+                />
                 <c.icon className="size-6 text-primary mb-4" aria-hidden="true" />
                 <div className="font-bold text-lg">{c.title}</div>
                 <div className="text-sm text-muted-foreground mt-1">{c.text}</div>

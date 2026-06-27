@@ -32,7 +32,14 @@ function ProjectCardBase({ project: p, index: i }: Props) {
     >
       <TiltCard className="h-full">
         <article className="group relative h-full rounded-2xl border border-border bg-card overflow-hidden hover:border-primary/60 hover:glow-neon transition-all">
-          <Link to="/projeto/$slug" params={{ slug: p.slug }} onMouseEnter={prefetchHero} onFocus={prefetchHero} className="block" data-cursor="hover">
+          <Link
+            to="/projeto/$slug"
+            params={{ slug: p.slug }}
+            onMouseEnter={prefetchHero}
+            onFocus={prefetchHero}
+            className="block"
+            data-cursor="hover"
+          >
             <div className="relative">
               {p.image ? (
                 <LazyImage
@@ -120,4 +127,7 @@ function ProjectCardBase({ project: p, index: i }: Props) {
   );
 }
 
-export const ProjectCard = memo(ProjectCardBase, (a, b) => a.project === b.project && a.index === b.index);
+export const ProjectCard = memo(
+  ProjectCardBase,
+  (a, b) => a.project === b.project && a.index === b.index,
+);

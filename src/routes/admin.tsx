@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Adriano // Workspace" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [{ title: "Adriano // Workspace" }, { name: "robots", content: "noindex" }],
+  }),
   beforeLoad: async ({ location }) => {
     const { data: userData, error: userErr } = await supabase.auth.getUser();
     if (userErr || !userData.user) {

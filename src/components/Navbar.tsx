@@ -26,7 +26,9 @@ export function Navbar() {
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [open]);
 
   return (
@@ -40,9 +42,19 @@ export function Navbar() {
         }`}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-10 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 group" data-cursor="hover" aria-label="Início — Adriano Oliveira">
-            <span className="inline-block w-2.5 h-2.5 bg-primary rounded-sm group-hover:rotate-45 transition-transform" aria-hidden="true" />
-            <span className="font-black tracking-[-0.05em] text-lg">ADRIANO<span className="text-primary">/</span>DEV</span>
+          <Link
+            to="/"
+            className="flex items-center gap-2 group"
+            data-cursor="hover"
+            aria-label="Início — Adriano Oliveira"
+          >
+            <span
+              className="inline-block w-2.5 h-2.5 bg-primary rounded-sm group-hover:rotate-45 transition-transform"
+              aria-hidden="true"
+            />
+            <span className="font-black tracking-[-0.05em] text-lg">
+              ADRIANO<span className="text-primary">/</span>DEV
+            </span>
           </Link>
           <nav className="hidden md:flex items-center gap-1">
             {links.map((l) => (
@@ -58,7 +70,9 @@ export function Navbar() {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            <div className="hidden sm:block"><ThemeSwitcher /></div>
+            <div className="hidden sm:block">
+              <ThemeSwitcher />
+            </div>
             <a
               href="#contato"
               data-cursor="hover"
@@ -88,8 +102,14 @@ export function Navbar() {
           >
             <div className="absolute inset-0 grid-bg opacity-40" />
             <div className="relative flex items-center justify-between p-6 border-b border-border">
-              <span className="font-black tracking-tight">ADRIANO<span className="text-primary">/</span>DEV</span>
-              <button onClick={() => setOpen(false)} className="p-2 rounded-md border border-border" aria-label="Fechar menu">
+              <span className="font-black tracking-tight">
+                ADRIANO<span className="text-primary">/</span>DEV
+              </span>
+              <button
+                onClick={() => setOpen(false)}
+                className="p-2 rounded-md border border-border"
+                aria-label="Fechar menu"
+              >
                 <X className="size-5" />
               </button>
             </div>
@@ -115,7 +135,9 @@ export function Navbar() {
             </nav>
             <div className="relative p-6 border-t border-border space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Tema</span>
+                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  Tema
+                </span>
                 <ThemeSwitcher />
               </div>
               <a

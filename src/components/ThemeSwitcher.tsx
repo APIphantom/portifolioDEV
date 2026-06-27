@@ -31,7 +31,9 @@ export function useTheme() {
   const set = (t: ThemeKey) => {
     setTheme(t);
     apply(t);
-    try { localStorage.setItem(KEY, t); } catch {}
+    try {
+      localStorage.setItem(KEY, t);
+    } catch {}
   };
 
   return { theme, setTheme: set };

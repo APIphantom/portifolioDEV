@@ -67,8 +67,8 @@ export function Storyline({ items: itemsProp }: Props) {
                 através do <span className="text-primary text-glow">código.</span>
               </h2>
               <p className="mt-6 max-w-xl text-muted-foreground">
-                Cada projeto, tecnologia e aprendizado construiu a forma como desenvolvo
-                interfaces hoje.
+                Cada projeto, tecnologia e aprendizado construiu a forma como desenvolvo interfaces
+                hoje.
               </p>
             </div>
 
@@ -149,7 +149,9 @@ export function Storyline({ items: itemsProp }: Props) {
                       <div className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
                         // {String(item.order).padStart(2, "0")}
                       </div>
-                      <div className="display text-4xl md:text-5xl mt-2 text-primary">{item.year}</div>
+                      <div className="display text-4xl md:text-5xl mt-2 text-primary">
+                        {item.year}
+                      </div>
                     </div>
                     <div className="size-12 rounded-xl border border-border flex items-center justify-center bg-background/50 group-hover:border-primary transition-colors">
                       <Icon className="size-5 text-primary" />
@@ -194,7 +196,8 @@ export function Storyline({ items: itemsProp }: Props) {
         <div className="px-6 lg:px-10 pb-6 mx-auto max-w-7xl w-full flex items-center justify-between text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
           <span>Scroll ↓ para avançar</span>
           <span className="font-mono">
-            {String(Math.min(activeIdx + 1, Math.max(sorted.length, 1))).padStart(2, "0")} / {String(Math.max(sorted.length, 1)).padStart(2, "0")}
+            {String(Math.min(activeIdx + 1, Math.max(sorted.length, 1))).padStart(2, "0")} /{" "}
+            {String(Math.max(sorted.length, 1)).padStart(2, "0")}
           </span>
         </div>
       </div>
