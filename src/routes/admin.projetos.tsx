@@ -118,7 +118,7 @@ function ProjetosPage() {
         />
       </div>
 
-      <div className="rounded-2xl border border-border bg-card/30 backdrop-blur-xl overflow-hidden">
+      <div className="rounded-2xl border border-border bg-card/30 backdrop-blur-xl overflow-visible">
         <div className="hidden md:grid grid-cols-[60px_1fr_120px_1.5fr_140px_60px] gap-3 px-4 py-3 border-b border-border text-[10px] uppercase tracking-widest text-muted-foreground">
           <div></div>
           <div>Projeto</div>

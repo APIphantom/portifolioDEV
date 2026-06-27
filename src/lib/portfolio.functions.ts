@@ -140,6 +140,7 @@ function rowToSettings(r: any) {
     bio: r?.bio ?? "",
     email: r?.email ?? "",
     location: r?.location ?? "",
+    cvUrl: r?.cv_url ?? "/cv-adriano-oliveira.pdf",
     github: r?.github ?? "",
     linkedin: r?.linkedin ?? "",
     twitter: r?.twitter ?? "",
@@ -439,6 +440,7 @@ const settingsInput = z.object({
   bio: z.string().max(2000).optional(),
   email: z.string().max(200).optional(),
   location: z.string().max(120).optional(),
+  cvUrl: z.string().max(500).optional(),
   github: z.string().max(300).optional(),
   linkedin: z.string().max(300).optional(),
   twitter: z.string().max(300).optional(),
@@ -460,6 +462,7 @@ export const updateSettings = createServerFn({ method: "POST" })
     if (data.bio !== undefined) row.bio = data.bio;
     if (data.email !== undefined) row.email = data.email;
     if (data.location !== undefined) row.location = data.location;
+    if (data.cvUrl !== undefined) row.cv_url = data.cvUrl;
     if (data.github !== undefined) row.github = data.github;
     if (data.linkedin !== undefined) row.linkedin = data.linkedin;
     if (data.twitter !== undefined) row.twitter = data.twitter;

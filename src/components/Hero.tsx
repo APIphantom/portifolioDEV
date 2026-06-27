@@ -10,6 +10,8 @@ export function Hero() {
   const { settings } = useSettings();
   const displayName = settings.name || "Adriano Oliveira";
   const role = settings.role || "Desenvolvedor Front-End Júnior";
+  const cvHref = settings.cvUrl || "/cv-adriano-oliveira.pdf";
+  const isExternalCv = /^https?:\/\//i.test(cvHref);
 
   return (
     <section
@@ -123,8 +125,10 @@ export function Hero() {
               />
             </MagneticButton>
             <a
-              href="/cv-adriano-oliveira.pdf"
-              download
+              href={cvHref}
+              download={isExternalCv ? undefined : true}
+              target={isExternalCv ? "_blank" : undefined}
+              rel={isExternalCv ? "noreferrer" : undefined}
               data-cursor="hover"
               className="inline-flex items-center gap-2 px-6 py-4 border border-border rounded-full font-bold uppercase tracking-widest text-xs hover:border-primary hover:text-primary transition-colors min-h-11"
             >

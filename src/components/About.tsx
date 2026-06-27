@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Code2, Palette, Smartphone, Zap } from "lucide-react";
+import { LazyImage } from "@/components/LazyImage";
 import { useSettings } from "@/lib/projects-store";
 
 const cards = [
@@ -58,13 +59,16 @@ export function About() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="mt-10 relative w-56 h-56 rounded-2xl overflow-hidden border border-border"
-            aria-hidden="true"
+            className="mt-10 relative w-56 h-56 rounded-2xl overflow-hidden border border-border bg-card"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-transparent to-transparent" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="display text-[10rem] text-primary/40 leading-none">A</span>
-            </div>
+            <LazyImage
+              src="/profile-photo.jpg"
+              alt={`Foto de ${displayName}`}
+              aspect="aspect-square"
+              priority
+              className="object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-primary/10" />
             <div className="absolute bottom-3 left-3 text-[10px] uppercase tracking-widest">
               <div className="text-muted-foreground">Avatar</div>
               <div className="text-foreground font-bold">Adriano // 26</div>

@@ -6,6 +6,7 @@ import {
   Image as ImageIcon,
   Cpu,
   Github,
+  FileText,
   Settings as SettingsIcon,
   LogOut,
   ExternalLink,
@@ -20,6 +21,7 @@ const items = [
   { to: "/admin/projetos", label: "Projetos", icon: FolderKanban },
   { to: "/admin/storyline", label: "Storyline", icon: Milestone },
   { to: "/admin/midias", label: "Mídias", icon: ImageIcon },
+  { to: "/admin/curriculos", label: "Currículos", icon: FileText },
   { to: "/admin/tecnologias", label: "Tecnologias", icon: Cpu },
   { to: "/admin/github", label: "GitHub Import", icon: Github },
 ];

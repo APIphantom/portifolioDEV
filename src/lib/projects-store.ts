@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import {
   useQuery,
   useMutation,
@@ -129,12 +129,12 @@ export function useProjects() {
   const dup = useServerFn(duplicateProjectFn);
 
   const q = useQuery({ queryKey: ["projects"], queryFn: () => list(), staleTime: 30_000 });
-  const projects = (q.data ?? []) as Project[];
+  const projects = useMemo(() => (q.data ?? []) as Project[], [q.data]);
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["projects"] });
 
   const mUpsert = useMutation({
-    mutationFn: (p: any) => upsert({ data: p }),
+    mutationFn: (p: Omit<Project, "id"> & { id?: string }) => upsert({ data: p }),
     onSuccess: invalidate,
   });
   const mDel = useMutation({
@@ -157,6 +157,7 @@ export function useProjects() {
   const updateProject = useCallback(
     (id: string, patch: Partial<Project>) => {
       const current = projects.find((x) => x.id === id);
+      if (!current) return;
       mUpsert.mutate({ ...current, ...patch, id });
     },
     [mUpsert, projects],
@@ -275,10 +276,13 @@ export function useTechnologies() {
   const del = useServerFn(deleteTechnology);
 
   const q = useQuery({ queryKey: ["technologies"], queryFn: () => list(), staleTime: 30_000 });
-  const items = (q.data ?? []) as Technology[];
+  const items = useMemo(() => (q.data ?? []) as Technology[], [q.data]);
   const invalidate = () => qc.invalidateQueries({ queryKey: ["technologies"] });
 
-  const mUp = useMutation({ mutationFn: (t: any) => ups({ data: t }), onSuccess: invalidate });
+  const mUp = useMutation({
+    mutationFn: (t: Omit<Technology, "id"> & { id?: string }) => ups({ data: t }),
+    onSuccess: invalidate,
+  });
   const mDel = useMutation({
     mutationFn: (id: string) => del({ data: { id } }),
     onSuccess: invalidate,
@@ -288,6 +292,7 @@ export function useTechnologies() {
   const update = useCallback(
     (id: string, patch: Partial<Technology>) => {
       const cur = items.find((x) => x.id === id);
+      if (!cur) return;
       mUp.mutate({ ...cur, ...patch, id });
     },
     [mUp, items],
@@ -304,6 +309,7 @@ export type Settings = {
   bio: string;
   email: string;
   location: string;
+  cvUrl: string;
   github: string;
   linkedin: string;
   twitter: string;
@@ -319,6 +325,7 @@ const settingsDefaults: Settings = {
   bio: "",
   email: "",
   location: "Brasil",
+  cvUrl: "/cv-adriano-oliveira.pdf",
   github: "",
   linkedin: "",
   twitter: "",

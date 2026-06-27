@@ -36,6 +36,10 @@ function SettingsPage() {
             onChange={(v) => update({ location: v })}
           />
         </Grid>
+        <p className="text-xs text-muted-foreground">
+          O currículo ativo agora é gerenciado na aba "Currículos", onde você pode enviar PDFs,
+          manter versões antigas e escolher qual fica no botão "Download CV".
+        </p>
       </Section>
 
       <Section title="Redes sociais">
