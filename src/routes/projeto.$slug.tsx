@@ -253,8 +253,8 @@ function ProjectPage() {
       {/* ===== HERO ===== */}
       <header className="relative pt-16 pb-20 px-6 lg:px-10 overflow-hidden">
         <div className="absolute inset-0 -z-10 grid-bg opacity-50" />
-        <div className="mx-auto max-w-7xl grid lg:grid-cols-12 gap-10 items-center">
-          <div className="lg:col-span-6">
+        <div className="mx-auto max-w-7xl grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+          <div className="lg:col-span-5 xl:pr-6">
             <motion.div
               {...fadeUp}
               className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.3em] mb-6"
@@ -267,7 +267,7 @@ function ProjectPage() {
             <motion.h1
               {...fadeUp}
               transition={{ ...fadeUp.transition, delay: 0.05 }}
-              className="display text-[clamp(3rem,9vw,8rem)] text-glow leading-[0.85]"
+              className="display max-w-[7ch] text-[clamp(2.8rem,6.6vw,5.8rem)] text-glow leading-[0.9]"
             >
               {project.title.split("/").map((part, i, arr) => (
                 <span key={i}>
@@ -305,7 +305,7 @@ function ProjectPage() {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="lg:col-span-6 relative"
+            className="lg:col-start-7 lg:col-span-6 relative"
           >
             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border bg-gradient-to-br from-graphite to-background glow-neon">
               {project.image ? (
