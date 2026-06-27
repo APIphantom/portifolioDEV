@@ -4,8 +4,8 @@ export function CustomCursor() {
   const dot = useRef<HTMLDivElement>(null);
   const ring = useRef<HTMLDivElement>(null);
   const [enabled, setEnabled] = useState(false);
-  const [hover, setHover] = useState(false);
-
+  // Removemos o estado 'hover' do React, pois ele causa re-render desnecessário
+  
   useEffect(() => {
     if (typeof window === "undefined") return;
     const can = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -18,12 +18,19 @@ export function CustomCursor() {
     const onMove = (e: MouseEvent) => {
       mx = e.clientX;
       my = e.clientY;
+      
+      // Atualização direta no DOM para evitar renderização do React
       if (dot.current) {
         dot.current.style.transform = `translate3d(${mx - 4}px, ${my - 4}px, 0)`;
       }
+
+      // Verificação de elementos interativos usando manipulação direta de classes
       const target = e.target as HTMLElement | null;
-      const interactive = !!target?.closest('a, button, [data-cursor="hover"], input, textarea, select, label');
-      setHover(interactive);
+      const isInteractive = !!target?.closest('a, button, [data-cursor="hover"], input, textarea, select, label');
+      
+      if (ring.current) {
+        ring.current.classList.toggle("is-hovering", isInteractive);
+      }
     };
 
     let raf = 0;
@@ -36,6 +43,7 @@ export function CustomCursor() {
       raf = requestAnimationFrame(loop);
     };
     loop();
+
     window.addEventListener("mousemove", onMove);
     return () => {
       cancelAnimationFrame(raf);
@@ -57,9 +65,8 @@ export function CustomCursor() {
       <div
         ref={ring}
         aria-hidden
-        className={`pointer-events-none fixed top-0 left-0 z-[10000] size-9 rounded-full border border-primary transition-[width,height,border-color,opacity] duration-200 ${
-          hover ? "scale-150 bg-primary/10" : ""
-        }`}
+        // Adicionei .is-hovering no CSS para substituir o estado do React
+        className="pointer-events-none fixed top-0 left-0 z-[10000] size-9 rounded-full border border-primary transition-[width,height,border-color,opacity] duration-200 [.is-hovering_&]:scale-150 [.is-hovering_&]:bg-primary/10"
         style={{ willChange: "transform" }}
       />
     </>
