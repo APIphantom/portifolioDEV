@@ -17,29 +17,55 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Adriano Oliveira — Desenvolvedor Front-End Júnior" },
-      { name: "description", content: "Portfólio de Adriano Oliveira, Desenvolvedor Front-End Júnior. React, Next.js, TypeScript e Tailwind. Interfaces modernas, responsivas e acessíveis." },
-      { name: "keywords", content: "front-end júnior, desenvolvedor react, next.js, typescript, tailwind, portfólio dev, Adriano Oliveira" },
+      {
+        name: "description",
+        content:
+          "Portfólio de Adriano Oliveira, Desenvolvedor Front-End Júnior. React, Next.js, TypeScript e Tailwind. Interfaces modernas, responsivas e acessíveis.",
+      },
+      {
+        name: "keywords",
+        content:
+          "front-end júnior, desenvolvedor react, next.js, typescript, tailwind, portfólio dev, Adriano Oliveira",
+      },
       { property: "og:title", content: "Adriano Oliveira — Front-End Júnior" },
-      { property: "og:description", content: "Transformo ideias em interfaces modernas, responsivas e acessíveis. Em busca da minha primeira oportunidade em Front-End." },
+      {
+        property: "og:description",
+        content:
+          "Transformo ideias em interfaces modernas, responsivas e acessíveis. Em busca da minha primeira oportunidade em Front-End.",
+      },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Adriano Oliveira — Front-End Júnior" },
-      { name: "twitter:description", content: "React · Next.js · TypeScript · Tailwind — Front-End Júnior em busca de oportunidade." },
+      {
+        name: "twitter:description",
+        content:
+          "React · Next.js · TypeScript · Tailwind — Front-End Júnior em busca de oportunidade.",
+      },
     ],
     links: [{ rel: "canonical", href: "/" }],
-    scripts: [{
-      type: "application/ld+json",
-      children: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Person",
-        name: "Adriano Oliveira",
-        jobTitle: "Desenvolvedor Front-End Júnior",
-        url: "/",
-        knowsAbout: ["React", "Next.js", "TypeScript", "Tailwind CSS", "JavaScript", "HTML", "CSS"],
-        sameAs: ["https://github.com", "https://linkedin.com"],
-      }),
-    }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name: "Adriano Oliveira",
+          jobTitle: "Desenvolvedor Front-End Júnior",
+          url: "/",
+          knowsAbout: [
+            "React",
+            "Next.js",
+            "TypeScript",
+            "Tailwind CSS",
+            "JavaScript",
+            "HTML",
+            "CSS",
+          ],
+          sameAs: ["https://github.com", "https://linkedin.com"],
+        }),
+      },
+    ],
   }),
   component: Index,
 });

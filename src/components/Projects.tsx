@@ -18,7 +18,9 @@ export function Projects({ projects }: { projects: Project[] }) {
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
           <div>
-            <div className="text-xs uppercase tracking-[0.3em] text-primary mb-4">// 03 — Drops</div>
+            <div className="text-xs uppercase tracking-[0.3em] text-primary mb-4">
+              // 03 — Drops
+            </div>
             <h2 className="display text-5xl md:text-7xl">
               Projetos <br />
               <span className="text-primary">selecionados.</span>

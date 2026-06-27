@@ -23,11 +23,13 @@ export const Route = createFileRoute("/sitemap.xml")({
               entries.push({ path: `/projeto/${p.slug}`, changefreq: "monthly", priority: "0.7" });
             }
           }
-        } catch { /* ignore — sitemap não pode quebrar */ }
+        } catch {
+          /* ignore — sitemap não pode quebrar */
+        }
 
         const urls = entries.map(
           (e) =>
-            `  <url><loc>${BASE_URL}${e.path}</loc><changefreq>${e.changefreq}</changefreq><priority>${e.priority}</priority></url>`
+            `  <url><loc>${BASE_URL}${e.path}</loc><changefreq>${e.changefreq}</changefreq><priority>${e.priority}</priority></url>`,
         );
         const xml = [
           `<?xml version="1.0" encoding="UTF-8"?>`,

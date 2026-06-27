@@ -108,7 +108,10 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[70] flex items-center justify-center p-4"
           >
-            <div className="absolute inset-0 bg-background/80 backdrop-blur-xl" onClick={() => setOpen(false)} />
+            <div
+              className="absolute inset-0 bg-background/80 backdrop-blur-xl"
+              onClick={() => setOpen(false)}
+            />
             <motion.div
               initial={{ scale: 0.95, y: 20, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
@@ -121,7 +124,10 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
                   <div className="text-xs uppercase tracking-[0.3em] text-primary">// Admin</div>
                   <div className="font-black text-2xl tracking-tight">Painel de Drops</div>
                 </div>
-                <button onClick={() => setOpen(false)} className="size-10 rounded-full border border-border flex items-center justify-center hover:border-primary">
+                <button
+                  onClick={() => setOpen(false)}
+                  className="size-10 rounded-full border border-border flex items-center justify-center hover:border-primary"
+                >
                   <X className="size-4" />
                 </button>
               </div>
@@ -133,7 +139,10 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
                   </div>
 
                   <div
-                    onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDrag(true);
+                    }}
                     onDragLeave={() => setDrag(false)}
                     onDrop={(e) => {
                       e.preventDefault();
@@ -143,15 +152,23 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
                     }}
                     onClick={() => fileRef.current?.click()}
                     className={`relative aspect-video rounded-2xl border-2 border-dashed cursor-pointer transition-all overflow-hidden ${
-                      drag ? "border-primary bg-primary/5 glow-neon" : "border-border hover:border-primary/50"
+                      drag
+                        ? "border-primary bg-primary/5 glow-neon"
+                        : "border-border hover:border-primary/50"
                     }`}
                   >
                     {form.image ? (
-                      <img src={form.image} alt="preview" className="absolute inset-0 w-full h-full object-cover" />
+                      <img
+                        src={form.image}
+                        alt="preview"
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
                     ) : (
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
                         <UploadCloud className="size-8" />
-                        <div className="text-xs uppercase tracking-widest">Drag & drop ou clique</div>
+                        <div className="text-xs uppercase tracking-widest">
+                          Drag & drop ou clique
+                        </div>
                       </div>
                     )}
                     <input
@@ -163,34 +180,98 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
                     />
                   </div>
 
-                  <Input label="Título" value={form.title} onChange={(v) => setForm({ ...form, title: v, slug: form.slug || slugify(v) })} required />
-                  <Input label="Slug (URL)" value={form.slug} onChange={(v) => setForm({ ...form, slug: slugify(v) })} placeholder="meu-projeto" />
+                  <Input
+                    label="Título"
+                    value={form.title}
+                    onChange={(v) => setForm({ ...form, title: v, slug: form.slug || slugify(v) })}
+                    required
+                  />
+                  <Input
+                    label="Slug (URL)"
+                    value={form.slug}
+                    onChange={(v) => setForm({ ...form, slug: slugify(v) })}
+                    placeholder="meu-projeto"
+                  />
 
                   <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5">Categoria</label>
+                    <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5">
+                      Categoria
+                    </label>
                     <select
                       value={form.category}
-                      onChange={(e) => setForm({ ...form, category: e.target.value as ProjectCategory })}
+                      onChange={(e) =>
+                        setForm({ ...form, category: e.target.value as ProjectCategory })
+                      }
                       className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:border-primary outline-none"
                     >
-                      {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+                      {CATEGORIES.map((c) => (
+                        <option key={c.value} value={c.value}>
+                          {c.label}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
-                  <TextArea label="Descrição curta" value={form.description} onChange={(v) => setForm({ ...form, description: v })} required />
-                  <TextArea label="Descrição completa" value={form.longDescription ?? ""} onChange={(v) => setForm({ ...form, longDescription: v })} />
-                  <Input label="Tecnologias (vírgula)" value={techInput} onChange={setTechInput} placeholder="React, Tailwind" />
-                  <Input label="GitHub" value={form.github ?? ""} onChange={(v) => setForm({ ...form, github: v })} placeholder="https://github.com/..." />
-                  <Input label="Demo" value={form.demo ?? ""} onChange={(v) => setForm({ ...form, demo: v })} placeholder="https://..." />
+                  <TextArea
+                    label="Descrição curta"
+                    value={form.description}
+                    onChange={(v) => setForm({ ...form, description: v })}
+                    required
+                  />
+                  <TextArea
+                    label="Descrição completa"
+                    value={form.longDescription ?? ""}
+                    onChange={(v) => setForm({ ...form, longDescription: v })}
+                  />
+                  <Input
+                    label="Tecnologias (vírgula)"
+                    value={techInput}
+                    onChange={setTechInput}
+                    placeholder="React, Tailwind"
+                  />
+                  <Input
+                    label="GitHub"
+                    value={form.github ?? ""}
+                    onChange={(v) => setForm({ ...form, github: v })}
+                    placeholder="https://github.com/..."
+                  />
+                  <Input
+                    label="Demo"
+                    value={form.demo ?? ""}
+                    onChange={(v) => setForm({ ...form, demo: v })}
+                    placeholder="https://..."
+                  />
 
                   <div className="border-t border-border pt-4">
-                    <div className="text-[10px] uppercase tracking-widest text-primary mb-3">Case Study</div>
+                    <div className="text-[10px] uppercase tracking-widest text-primary mb-3">
+                      Case Study
+                    </div>
                     <div className="space-y-3">
-                      <TextArea label="Objetivo" value={form.objective ?? ""} onChange={(v) => setForm({ ...form, objective: v })} />
-                      <TextArea label="Problema" value={form.problem ?? ""} onChange={(v) => setForm({ ...form, problem: v })} />
-                      <TextArea label="Solução" value={form.solution ?? ""} onChange={(v) => setForm({ ...form, solution: v })} />
-                      <TextArea label="Processo" value={form.process ?? ""} onChange={(v) => setForm({ ...form, process: v })} />
-                      <TextArea label="Resultado" value={form.result ?? ""} onChange={(v) => setForm({ ...form, result: v })} />
+                      <TextArea
+                        label="Objetivo"
+                        value={form.objective ?? ""}
+                        onChange={(v) => setForm({ ...form, objective: v })}
+                      />
+                      <TextArea
+                        label="Problema"
+                        value={form.problem ?? ""}
+                        onChange={(v) => setForm({ ...form, problem: v })}
+                      />
+                      <TextArea
+                        label="Solução"
+                        value={form.solution ?? ""}
+                        onChange={(v) => setForm({ ...form, solution: v })}
+                      />
+                      <TextArea
+                        label="Processo"
+                        value={form.process ?? ""}
+                        onChange={(v) => setForm({ ...form, process: v })}
+                      />
+                      <TextArea
+                        label="Resultado"
+                        value={form.result ?? ""}
+                        onChange={(v) => setForm({ ...form, result: v })}
+                      />
                     </div>
                   </div>
 
@@ -202,7 +283,11 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
                       <Plus className="size-4" /> {editingId ? "Salvar" : "Adicionar"}
                     </button>
                     {editingId && (
-                      <button type="button" onClick={reset} className="px-4 py-3 rounded-full border border-border text-xs uppercase tracking-widest">
+                      <button
+                        type="button"
+                        onClick={reset}
+                        className="px-4 py-3 rounded-full border border-border text-xs uppercase tracking-widest"
+                      >
                         Cancelar
                       </button>
                     )}
@@ -215,10 +300,17 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
                   </div>
                   <div className="space-y-2 max-h-[700px] overflow-y-auto pr-1">
                     {projects.map((p) => (
-                      <div key={p.id} className="flex gap-3 p-3 rounded-xl border border-border hover:border-primary/40 transition-colors">
+                      <div
+                        key={p.id}
+                        className="flex gap-3 p-3 rounded-xl border border-border hover:border-primary/40 transition-colors"
+                      >
                         <div className="size-14 shrink-0 rounded-lg overflow-hidden bg-muted">
                           {p.image ? (
-                            <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
+                            <img
+                              src={p.image}
+                              alt={p.title}
+                              className="w-full h-full object-cover"
+                            />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-primary/40 font-black">
                               {p.title.charAt(0)}
@@ -227,14 +319,24 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-bold truncate">{p.title}</div>
-                          <div className="text-[10px] uppercase tracking-widest text-primary truncate">/{p.slug}</div>
-                          <div className="text-xs text-muted-foreground truncate">{p.tech.join(" · ")}</div>
+                          <div className="text-[10px] uppercase tracking-widest text-primary truncate">
+                            /{p.slug}
+                          </div>
+                          <div className="text-xs text-muted-foreground truncate">
+                            {p.tech.join(" · ")}
+                          </div>
                         </div>
                         <div className="flex gap-1">
-                          <button onClick={() => startEdit(p)} className="size-8 rounded-md border border-border hover:border-primary hover:text-primary flex items-center justify-center">
+                          <button
+                            onClick={() => startEdit(p)}
+                            className="size-8 rounded-md border border-border hover:border-primary hover:text-primary flex items-center justify-center"
+                          >
                             <Pencil className="size-3.5" />
                           </button>
-                          <button onClick={() => onRemove(p.id)} className="size-8 rounded-md border border-border hover:border-destructive hover:text-destructive flex items-center justify-center">
+                          <button
+                            onClick={() => onRemove(p.id)}
+                            className="size-8 rounded-md border border-border hover:border-destructive hover:text-destructive flex items-center justify-center"
+                          >
                             <Trash2 className="size-3.5" />
                           </button>
                         </div>
@@ -256,10 +358,24 @@ export function AdminPanel({ projects, onAdd, onUpdate, onRemove }: Props) {
   );
 }
 
-function Input({ label, value, onChange, required, placeholder }: { label: string; value: string; onChange: (v: string) => void; required?: boolean; placeholder?: string }) {
+function Input({
+  label,
+  value,
+  onChange,
+  required,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  required?: boolean;
+  placeholder?: string;
+}) {
   return (
     <div>
-      <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5">{label}</label>
+      <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5">
+        {label}
+      </label>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -271,10 +387,22 @@ function Input({ label, value, onChange, required, placeholder }: { label: strin
   );
 }
 
-function TextArea({ label, value, onChange, required }: { label: string; value: string; onChange: (v: string) => void; required?: boolean }) {
+function TextArea({
+  label,
+  value,
+  onChange,
+  required,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  required?: boolean;
+}) {
   return (
     <div>
-      <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5">{label}</label>
+      <label className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5">
+        {label}
+      </label>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}

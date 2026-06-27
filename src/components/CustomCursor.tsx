@@ -5,7 +5,7 @@ export function CustomCursor() {
   const ring = useRef<HTMLDivElement>(null);
   const [enabled, setEnabled] = useState(false);
   // Removemos o estado 'hover' do React, pois ele causa re-render desnecessário
-  
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     const can = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -13,12 +13,15 @@ export function CustomCursor() {
     setEnabled(true);
     document.body.classList.add("has-custom-cursor");
 
-    let mx = 0, my = 0, rx = 0, ry = 0;
+    let mx = 0,
+      my = 0,
+      rx = 0,
+      ry = 0;
 
     const onMove = (e: MouseEvent) => {
       mx = e.clientX;
       my = e.clientY;
-      
+
       // Atualização direta no DOM para evitar renderização do React
       if (dot.current) {
         dot.current.style.transform = `translate3d(${mx - 4}px, ${my - 4}px, 0)`;
@@ -26,8 +29,10 @@ export function CustomCursor() {
 
       // Verificação de elementos interativos usando manipulação direta de classes
       const target = e.target as HTMLElement | null;
-      const isInteractive = !!target?.closest('a, button, [data-cursor="hover"], input, textarea, select, label');
-      
+      const isInteractive = !!target?.closest(
+        'a, button, [data-cursor="hover"], input, textarea, select, label',
+      );
+
       if (ring.current) {
         ring.current.classList.toggle("is-hovering", isInteractive);
       }

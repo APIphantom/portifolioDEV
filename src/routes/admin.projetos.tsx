@@ -1,7 +1,17 @@
 import { useState, useMemo, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Search, MoreHorizontal, Pencil, Eye, Copy, Archive, Trash2, ExternalLink } from "lucide-react";
+import {
+  Plus,
+  Search,
+  MoreHorizontal,
+  Pencil,
+  Eye,
+  Copy,
+  Archive,
+  Trash2,
+  ExternalLink,
+} from "lucide-react";
 import { useProjects, CATEGORIES, type Project, type ProjectStatus } from "@/lib/projects-store";
 import { ProjectEditor } from "@/components/admin/ProjectEditor";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,7 +24,8 @@ export const Route = createFileRoute("/admin/projetos")({
 function ProjetosPage() {
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
-  const { projects, addProject, updateProject, removeProject, duplicateProject, loaded } = useProjects();
+  const { projects, addProject, updateProject, removeProject, duplicateProject, loaded } =
+    useProjects();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<"all" | ProjectStatus>("all");
   const [category, setCategory] = useState<"all" | string>("all");
@@ -32,11 +43,18 @@ function ProjetosPage() {
 
   const filtered = useMemo(() => {
     let list = projects;
-    if (q) list = list.filter((p) => p.title.toLowerCase().includes(q.toLowerCase()) || p.tech.join(" ").toLowerCase().includes(q.toLowerCase()));
+    if (q)
+      list = list.filter(
+        (p) =>
+          p.title.toLowerCase().includes(q.toLowerCase()) ||
+          p.tech.join(" ").toLowerCase().includes(q.toLowerCase()),
+      );
     if (status !== "all") list = list.filter((p) => (p.publication?.status ?? "draft") === status);
     if (category !== "all") list = list.filter((p) => p.category === category);
     list = [...list].sort((a, b) =>
-      sort === "title" ? a.title.localeCompare(b.title) : (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""),
+      sort === "title"
+        ? a.title.localeCompare(b.title)
+        : (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""),
     );
     return list;
   }, [projects, q, status, category, sort]);
@@ -45,9 +63,13 @@ function ProjetosPage() {
     <div className="max-w-7xl mx-auto px-6 lg:px-10 py-10 space-y-8">
       <header className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.3em] text-primary mb-2">// Projetos</div>
+          <div className="text-[10px] uppercase tracking-[0.3em] text-primary mb-2">
+            // Projetos
+          </div>
           <h1 className="text-3xl lg:text-4xl font-black tracking-tight">Gerenciar projetos</h1>
-          <p className="text-muted-foreground text-sm mt-1">{projects.length} projetos no portfólio.</p>
+          <p className="text-muted-foreground text-sm mt-1">
+            {projects.length} projetos no portfólio.
+          </p>
         </div>
         <button
           onClick={() => setCreating(true)}
@@ -68,17 +90,32 @@ function ProjetosPage() {
             className="w-full pl-10 pr-3 py-2.5 rounded-lg bg-card/40 border border-border text-sm focus:border-primary outline-none transition-colors"
           />
         </div>
-        <Select value={status} onChange={(v) => setStatus(v as never)} options={[
-          { value: "all", label: "Todos status" },
-          { value: "published", label: "Publicado" },
-          { value: "draft", label: "Rascunho" },
-          { value: "archived", label: "Arquivado" },
-        ]} />
-        <Select value={category} onChange={setCategory} options={[{ value: "all", label: "Todas categorias" }, ...CATEGORIES.map((c) => ({ value: c.value, label: c.label }))]} />
-        <Select value={sort} onChange={(v) => setSort(v as never)} options={[
-          { value: "updated", label: "Atualizado" },
-          { value: "title", label: "Título" },
-        ]} />
+        <Select
+          value={status}
+          onChange={(v) => setStatus(v as never)}
+          options={[
+            { value: "all", label: "Todos status" },
+            { value: "published", label: "Publicado" },
+            { value: "draft", label: "Rascunho" },
+            { value: "archived", label: "Arquivado" },
+          ]}
+        />
+        <Select
+          value={category}
+          onChange={setCategory}
+          options={[
+            { value: "all", label: "Todas categorias" },
+            ...CATEGORIES.map((c) => ({ value: c.value, label: c.label })),
+          ]}
+        />
+        <Select
+          value={sort}
+          onChange={(v) => setSort(v as never)}
+          options={[
+            { value: "updated", label: "Atualizado" },
+            { value: "title", label: "Título" },
+          ]}
+        />
       </div>
 
       <div className="rounded-2xl border border-border bg-card/30 backdrop-blur-xl overflow-hidden">
@@ -92,26 +129,52 @@ function ProjetosPage() {
         </div>
         <div className="divide-y divide-border">
           {filtered.map((p) => (
-            <div key={p.id} className="grid grid-cols-[60px_1fr_60px] md:grid-cols-[60px_1fr_120px_1.5fr_140px_60px] gap-3 px-4 py-3 items-center hover:bg-muted/10 transition-colors group">
+            <div
+              key={p.id}
+              className="grid grid-cols-[60px_1fr_60px] md:grid-cols-[60px_1fr_120px_1.5fr_140px_60px] gap-3 px-4 py-3 items-center hover:bg-muted/10 transition-colors group"
+            >
               <div className="size-12 rounded-md overflow-hidden bg-muted">
-                {p.image ? <img src={p.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-primary/40 font-black text-sm">{p.title.charAt(0)}</div>}
+                {p.image ? (
+                  <img src={p.image} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-primary/40 font-black text-sm">
+                    {p.title.charAt(0)}
+                  </div>
+                )}
               </div>
               <div className="min-w-0">
-                <button onClick={() => setEditing(p)} className="font-bold truncate hover:text-primary text-left block w-full">{p.title}</button>
+                <button
+                  onClick={() => setEditing(p)}
+                  className="font-bold truncate hover:text-primary text-left block w-full"
+                >
+                  {p.title}
+                </button>
                 <div className="text-xs text-muted-foreground truncate">/{p.slug}</div>
               </div>
-              <div className="hidden md:block"><StatusPill status={p.publication?.status ?? "draft"} /></div>
+              <div className="hidden md:block">
+                <StatusPill status={p.publication?.status ?? "draft"} />
+              </div>
               <div className="hidden md:flex flex-wrap gap-1 min-w-0">
                 {p.tech.slice(0, 3).map((t) => (
-                  <span key={t} className="px-2 py-0.5 rounded-full bg-muted/40 border border-border text-[10px] text-muted-foreground">{t}</span>
+                  <span
+                    key={t}
+                    className="px-2 py-0.5 rounded-full bg-muted/40 border border-border text-[10px] text-muted-foreground"
+                  >
+                    {t}
+                  </span>
                 ))}
-                {p.tech.length > 3 && <span className="text-[10px] text-muted-foreground">+{p.tech.length - 3}</span>}
+                {p.tech.length > 3 && (
+                  <span className="text-[10px] text-muted-foreground">+{p.tech.length - 3}</span>
+                )}
               </div>
               <div className="hidden md:block text-xs text-muted-foreground">
                 {p.updatedAt ? new Date(p.updatedAt).toLocaleDateString("pt-BR") : "—"}
               </div>
               <div className="relative">
-                <button onClick={() => setMenuFor(menuFor === p.id ? null : p.id)} className="size-8 rounded-md border border-border hover:border-primary flex items-center justify-center">
+                <button
+                  onClick={() => setMenuFor(menuFor === p.id ? null : p.id)}
+                  className="size-8 rounded-md border border-border hover:border-primary flex items-center justify-center"
+                >
                   <MoreHorizontal className="size-4" />
                 </button>
                 <AnimatePresence>
@@ -125,12 +188,53 @@ function ProjetosPage() {
                         transition={{ duration: 0.12 }}
                         className="absolute right-0 top-10 z-30 w-48 rounded-xl border border-border bg-popover/95 backdrop-blur-xl shadow-2xl p-1"
                       >
-                        <MenuItem icon={Pencil} label="Editar" onClick={() => { setEditing(p); setMenuFor(null); }} />
-                        <MenuItem icon={Eye} label="Visualizar" onClick={() => { window.open(`/projeto/${p.slug}`, "_blank"); setMenuFor(null); }} />
-                        <MenuItem icon={Copy} label="Duplicar" onClick={() => { duplicateProject(p.id); setMenuFor(null); }} />
-                        <MenuItem icon={Archive} label="Arquivar" onClick={() => { updateProject(p.id, { publication: { ...(p.publication ?? { visibility: "public" as const }), status: "archived" } }); setMenuFor(null); }} />
+                        <MenuItem
+                          icon={Pencil}
+                          label="Editar"
+                          onClick={() => {
+                            setEditing(p);
+                            setMenuFor(null);
+                          }}
+                        />
+                        <MenuItem
+                          icon={Eye}
+                          label="Visualizar"
+                          onClick={() => {
+                            window.open(`/projeto/${p.slug}`, "_blank");
+                            setMenuFor(null);
+                          }}
+                        />
+                        <MenuItem
+                          icon={Copy}
+                          label="Duplicar"
+                          onClick={() => {
+                            duplicateProject(p.id);
+                            setMenuFor(null);
+                          }}
+                        />
+                        <MenuItem
+                          icon={Archive}
+                          label="Arquivar"
+                          onClick={() => {
+                            updateProject(p.id, {
+                              publication: {
+                                ...(p.publication ?? { visibility: "public" as const }),
+                                status: "archived",
+                              },
+                            });
+                            setMenuFor(null);
+                          }}
+                        />
                         <div className="h-px bg-border my-1" />
-                        <MenuItem icon={Trash2} label="Excluir" destructive onClick={() => { if (confirm("Excluir definitivamente?")) removeProject(p.id); setMenuFor(null); }} />
+                        <MenuItem
+                          icon={Trash2}
+                          label="Excluir"
+                          destructive
+                          onClick={() => {
+                            if (confirm("Excluir definitivamente?")) removeProject(p.id);
+                            setMenuFor(null);
+                          }}
+                        />
                       </motion.div>
                     </>
                   )}
@@ -141,7 +245,10 @@ function ProjetosPage() {
           {!loaded && (
             <div className="p-4 space-y-3">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="grid grid-cols-[1fr] md:grid-cols-[2fr_120px_2fr_120px_40px] gap-4 items-center">
+                <div
+                  key={i}
+                  className="grid grid-cols-[1fr] md:grid-cols-[2fr_120px_2fr_120px_40px] gap-4 items-center"
+                >
                   <Skeleton className="h-5 w-3/4" />
                   <Skeleton className="hidden md:block h-5 w-20" />
                   <Skeleton className="hidden md:block h-5 w-2/3" />
@@ -162,18 +269,32 @@ function ProjetosPage() {
       <ProjectEditor
         open={!!editing || creating}
         project={editing}
-        onClose={() => { setEditing(null); setCreating(false); }}
+        onClose={() => {
+          setEditing(null);
+          setCreating(false);
+        }}
         onSave={(data) => {
           if (editing) updateProject(editing.id, data);
           else addProject(data);
-          setEditing(null); setCreating(false);
+          setEditing(null);
+          setCreating(false);
         }}
       />
     </div>
   );
 }
 
-function MenuItem({ icon: Icon, label, onClick, destructive }: { icon: typeof Pencil; label: string; onClick: () => void; destructive?: boolean }) {
+function MenuItem({
+  icon: Icon,
+  label,
+  onClick,
+  destructive,
+}: {
+  icon: typeof Pencil;
+  label: string;
+  onClick: () => void;
+  destructive?: boolean;
+}) {
   return (
     <button
       onClick={onClick}
@@ -187,14 +308,26 @@ function MenuItem({ icon: Icon, label, onClick, destructive }: { icon: typeof Pe
   );
 }
 
-function Select({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: { value: string; label: string }[] }) {
+function Select({
+  value,
+  onChange,
+  options,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+}) {
   return (
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className="bg-card/40 border border-border rounded-lg px-3 py-2.5 text-sm focus:border-primary outline-none transition-colors"
     >
-      {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+      {options.map((o) => (
+        <option key={o.value} value={o.value}>
+          {o.label}
+        </option>
+      ))}
     </select>
   );
 }
@@ -205,9 +338,15 @@ function StatusPill({ status }: { status: string }) {
     draft: "bg-amber-500/10 text-amber-400 border-amber-500/20",
     archived: "bg-muted text-muted-foreground border-border",
   };
-  const label: Record<string, string> = { published: "Publicado", draft: "Rascunho", archived: "Arquivado" };
+  const label: Record<string, string> = {
+    published: "Publicado",
+    draft: "Rascunho",
+    archived: "Arquivado",
+  };
   return (
-    <span className={`px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-widest inline-block ${map[status] ?? map.draft}`}>
+    <span
+      className={`px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-widest inline-block ${map[status] ?? map.draft}`}
+    >
       {label[status] ?? status}
     </span>
   );

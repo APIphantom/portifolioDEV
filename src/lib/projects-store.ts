@@ -1,11 +1,24 @@
 import { useCallback } from "react";
-import { useQuery, useMutation, useQueryClient, useQueryClient as useQc } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useQueryClient as useQc,
+} from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
-  listProjects, upsertProject, deleteProject, duplicateProjectFn,
-  listTechnologies, upsertTechnology, deleteTechnology,
-  listMedia, uploadMedia, deleteMedia,
-  getSettings, updateSettings,
+  listProjects,
+  upsertProject,
+  deleteProject,
+  duplicateProjectFn,
+  listTechnologies,
+  upsertTechnology,
+  deleteTechnology,
+  listMedia,
+  uploadMedia,
+  deleteMedia,
+  getSettings,
+  updateSettings,
 } from "./portfolio.functions";
 
 /* ============ TIPOS (mantidos da versão antiga) ============ */
@@ -120,24 +133,46 @@ export function useProjects() {
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["projects"] });
 
-  const mUpsert = useMutation({ mutationFn: (p: any) => upsert({ data: p }), onSuccess: invalidate });
-  const mDel = useMutation({ mutationFn: (id: string) => del({ data: { id } }), onSuccess: invalidate });
-  const mDup = useMutation({ mutationFn: (id: string) => dup({ data: { id } }), onSuccess: invalidate });
+  const mUpsert = useMutation({
+    mutationFn: (p: any) => upsert({ data: p }),
+    onSuccess: invalidate,
+  });
+  const mDel = useMutation({
+    mutationFn: (id: string) => del({ data: { id } }),
+    onSuccess: invalidate,
+  });
+  const mDup = useMutation({
+    mutationFn: (id: string) => dup({ data: { id } }),
+    onSuccess: invalidate,
+  });
 
-  const addProject = useCallback((p: Omit<Project, "id" | "slug"> & { slug?: string }) => {
-    const slug = p.slug || slugify(p.title) || uid().slice(0, 8);
-    mUpsert.mutate({ ...p, slug });
-  }, [mUpsert]);
+  const addProject = useCallback(
+    (p: Omit<Project, "id" | "slug"> & { slug?: string }) => {
+      const slug = p.slug || slugify(p.title) || uid().slice(0, 8);
+      mUpsert.mutate({ ...p, slug });
+    },
+    [mUpsert],
+  );
 
-  const updateProject = useCallback((id: string, patch: Partial<Project>) => {
-    const current = projects.find((x) => x.id === id);
-    mUpsert.mutate({ ...current, ...patch, id });
-  }, [mUpsert, projects]);
+  const updateProject = useCallback(
+    (id: string, patch: Partial<Project>) => {
+      const current = projects.find((x) => x.id === id);
+      mUpsert.mutate({ ...current, ...patch, id });
+    },
+    [mUpsert, projects],
+  );
 
   const removeProject = useCallback((id: string) => mDel.mutate(id), [mDel]);
   const duplicateProject = useCallback((id: string) => mDup.mutate(id), [mDup]);
 
-  return { projects, addProject, updateProject, removeProject, duplicateProject, loaded: !q.isPending };
+  return {
+    projects,
+    addProject,
+    updateProject,
+    removeProject,
+    duplicateProject,
+    loaded: !q.isPending,
+  };
 }
 
 /* ============ MEDIA ============ */
@@ -176,7 +211,14 @@ export function useMedia() {
   const invalidate = () => qc.invalidateQueries({ queryKey: ["media"] });
 
   const mUp = useMutation({
-    mutationFn: async (m: { name: string; type: string; size: number; file?: File; url?: string; folder?: string }) => {
+    mutationFn: async (m: {
+      name: string;
+      type: string;
+      size: number;
+      file?: File;
+      url?: string;
+      folder?: string;
+    }) => {
       // Compat: se vier `file`, envia para Storage. Se vier `url` (data URI), extrai base64.
       let dataBase64 = "";
       if (m.file) dataBase64 = await fileToBase64(m.file);
@@ -186,16 +228,31 @@ export function useMedia() {
       } else {
         throw new Error("Upload precisa de arquivo ou data URI");
       }
-      return up({ data: { name: m.name, type: m.type, size: m.size, dataBase64, folder: m.folder ?? "" } });
+      return up({
+        data: { name: m.name, type: m.type, size: m.size, dataBase64, folder: m.folder ?? "" },
+      });
     },
     onSuccess: invalidate,
   });
 
-  const mDel = useMutation({ mutationFn: (id: string) => del({ data: { id } }), onSuccess: invalidate });
+  const mDel = useMutation({
+    mutationFn: (id: string) => del({ data: { id } }),
+    onSuccess: invalidate,
+  });
 
-  const add = useCallback((m: Omit<MediaItem, "id" | "createdAt"> & { file?: File }) => {
-    mUp.mutate({ name: m.name, type: m.type, size: m.size, file: m.file, url: m.url, folder: m.folder });
-  }, [mUp]);
+  const add = useCallback(
+    (m: Omit<MediaItem, "id" | "createdAt"> & { file?: File }) => {
+      mUp.mutate({
+        name: m.name,
+        type: m.type,
+        size: m.size,
+        file: m.file,
+        url: m.url,
+        folder: m.folder,
+      });
+    },
+    [mUp],
+  );
   const remove = useCallback((id: string) => mDel.mutate(id), [mDel]);
 
   return { items, add, remove, uploading: mUp.isPending };
@@ -222,13 +279,19 @@ export function useTechnologies() {
   const invalidate = () => qc.invalidateQueries({ queryKey: ["technologies"] });
 
   const mUp = useMutation({ mutationFn: (t: any) => ups({ data: t }), onSuccess: invalidate });
-  const mDel = useMutation({ mutationFn: (id: string) => del({ data: { id } }), onSuccess: invalidate });
+  const mDel = useMutation({
+    mutationFn: (id: string) => del({ data: { id } }),
+    onSuccess: invalidate,
+  });
 
   const add = useCallback((t: Omit<Technology, "id">) => mUp.mutate(t), [mUp]);
-  const update = useCallback((id: string, patch: Partial<Technology>) => {
-    const cur = items.find((x) => x.id === id);
-    mUp.mutate({ ...cur, ...patch, id });
-  }, [mUp, items]);
+  const update = useCallback(
+    (id: string, patch: Partial<Technology>) => {
+      const cur = items.find((x) => x.id === id);
+      mUp.mutate({ ...cur, ...patch, id });
+    },
+    [mUp, items],
+  );
   const remove = useCallback((id: string) => mDel.mutate(id), [mDel]);
 
   return { items, add, update, remove };
@@ -256,8 +319,12 @@ const settingsDefaults: Settings = {
   bio: "",
   email: "",
   location: "Brasil",
-  github: "", linkedin: "", twitter: "", instagram: "",
-  githubUsername: "", githubToken: "",
+  github: "",
+  linkedin: "",
+  twitter: "",
+  instagram: "",
+  githubUsername: "",
+  githubToken: "",
 };
 
 export function useSettings() {
@@ -270,7 +337,9 @@ export function useSettings() {
 
   const mUpd = useMutation({
     mutationFn: (patch: Partial<Settings>) => upd({ data: patch }),
-    onSuccess: (data) => { qc.setQueryData(["settings"], data); },
+    onSuccess: (data) => {
+      qc.setQueryData(["settings"], data);
+    },
   });
 
   const update = useCallback((patch: Partial<Settings>) => mUpd.mutate(patch), [mUpd]);

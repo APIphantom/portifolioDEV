@@ -7,25 +7,27 @@ import { SUPABASE_PUBLIC } from "./client";
  * Middleware de server function que exige usuário autenticado.
  * Injeta { supabase, userId, claims } no context. RLS aplica-se como o usuário.
  */
-export const requireSupabaseAuth = createMiddleware({ type: "function" }).server(async ({ next }) => {
-  const authHeader = getRequestHeader("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    throw new Response("Unauthorized: No authorization header provided", { status: 401 });
-  }
-  const token = authHeader.slice("Bearer ".length);
+export const requireSupabaseAuth = createMiddleware({ type: "function" }).server(
+  async ({ next }) => {
+    const authHeader = getRequestHeader("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      throw new Response("Unauthorized: No authorization header provided", { status: 401 });
+    }
+    const token = authHeader.slice("Bearer ".length);
 
-  const supabase = createClient(SUPABASE_PUBLIC.url, SUPABASE_PUBLIC.key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-    global: { headers: { Authorization: authHeader } },
-  });
+    const supabase = createClient(SUPABASE_PUBLIC.url, SUPABASE_PUBLIC.key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+      global: { headers: { Authorization: authHeader } },
+    });
 
-  const { data, error } = await supabase.auth.getUser(token);
-  if (error || !data.user) {
-    throw new Response("Unauthorized", { status: 401 });
-  }
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error || !data.user) {
+      throw new Response("Unauthorized", { status: 401 });
+    }
 
-  return next({ context: { supabase, userId: data.user.id, user: data.user } });
-});
+    return next({ context: { supabase, userId: data.user.id, user: data.user } });
+  },
+);
 
 /**
  * Exige que o usuário autenticado tenha role 'admin' na tabela user_roles.

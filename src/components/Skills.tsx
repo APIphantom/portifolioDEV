@@ -31,7 +31,9 @@ export function Skills() {
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
           <div>
-            <div className="text-xs uppercase tracking-[0.3em] text-primary mb-4">// 02 — Stack</div>
+            <div className="text-xs uppercase tracking-[0.3em] text-primary mb-4">
+              // 02 — Stack
+            </div>
             <h2 id="skills-title" className="display text-5xl md:text-7xl">
               Meu <span className="text-primary">arsenal</span>
               <br />
@@ -78,7 +80,10 @@ export function Skills() {
                       transition={{ delay: i * 0.05 }}
                       className="group p-6 rounded-2xl border border-border bg-card relative overflow-hidden hover:border-primary/60 hover:glow-neon transition-all"
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+                      <div
+                        className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-hidden="true"
+                      />
                       <div className="relative flex items-baseline justify-between mb-3 gap-4">
                         <div className="flex items-center gap-3">
                           <span className="text-xs text-muted-foreground tabular-nums font-mono">

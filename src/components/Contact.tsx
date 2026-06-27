@@ -2,11 +2,7 @@ import { motion } from "framer-motion";
 import { Github, Linkedin, Instagram, Send, Loader2, CheckCircle2 } from "lucide-react";
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
-import {
-  sendContactMessage,
-  validateContactForm,
-  type ContactInput,
-} from "@/services/contact";
+import { sendContactMessage, validateContactForm, type ContactInput } from "@/services/contact";
 import { useSettings } from "@/lib/projects-store";
 
 type Errors = Partial<Record<keyof ContactInput, string>>;
@@ -26,39 +22,54 @@ export function Contact() {
   const [errors, setErrors] = useState<Errors>({});
   const [values, setValues] = useState<ContactInput>(INITIAL);
 
-  const onSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrors({});
+  const onSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setErrors({});
 
-    const validation = validateContactForm(values);
-    if (!validation.ok) {
-      setErrors(validation.errors);
-      setStatus("error");
-      toast.error("Verifique os campos do formulário");
-      return;
-    }
+      const validation = validateContactForm(values);
+      if (!validation.ok) {
+        setErrors(validation.errors);
+        setStatus("error");
+        toast.error("Verifique os campos do formulário");
+        return;
+      }
 
-    setStatus("loading");
-    const result = await sendContactMessage(validation.data);
+      setStatus("loading");
+      const result = await sendContactMessage(validation.data);
 
-    if (result.ok) {
-      setStatus("success");
-      toast.success("Mensagem enviada — retorno em breve ✦");
-      setValues(INITIAL);
-      setTimeout(() => setStatus("idle"), 3000);
-    } else {
-      setStatus("error");
-      toast.error(result.error);
-    }
-  }, [values]);
+      if (result.ok) {
+        setStatus("success");
+        toast.success("Mensagem enviada — retorno em breve ✦");
+        setValues(INITIAL);
+        setTimeout(() => setStatus("idle"), 3000);
+      } else {
+        setStatus("error");
+        toast.error(result.error);
+      }
+    },
+    [values],
+  );
 
   const isLoading = status === "loading";
   const isSuccess = status === "success";
 
   const socialLinks = [
-    { Icon: Github, label: settings.github || "GitHub não configurado", href: toAbsoluteUrl(settings.github) },
-    { Icon: Linkedin, label: settings.linkedin || "LinkedIn não configurado", href: toAbsoluteUrl(settings.linkedin) },
-    { Icon: Instagram, label: settings.instagram || "Instagram não configurado", href: toAbsoluteUrl(settings.instagram) },
+    {
+      Icon: Github,
+      label: settings.github || "GitHub não configurado",
+      href: toAbsoluteUrl(settings.github),
+    },
+    {
+      Icon: Linkedin,
+      label: settings.linkedin || "LinkedIn não configurado",
+      href: toAbsoluteUrl(settings.linkedin),
+    },
+    {
+      Icon: Instagram,
+      label: settings.instagram || "Instagram não configurado",
+      href: toAbsoluteUrl(settings.instagram),
+    },
   ].filter((item) => item.href);
 
   return (
@@ -69,13 +80,20 @@ export function Contact() {
     >
       <div className="mx-auto max-w-7xl grid lg:grid-cols-12 gap-12">
         <div className="lg:col-span-5">
-          <div className="text-xs uppercase tracking-[0.3em] text-primary mb-4">// 05 — Contato</div>
+          <div className="text-xs uppercase tracking-[0.3em] text-primary mb-4">
+            // 05 — Contato
+          </div>
           <h2 id="contato-title" className="display text-5xl md:text-7xl">
-            Vamos<br />conversar<br /><span className="text-primary">.</span>
+            Vamos
+            <br />
+            conversar
+            <br />
+            <span className="text-primary">.</span>
           </h2>
           <p className="mt-6 text-muted-foreground max-w-md">
-            Estou em busca da minha primeira oportunidade como {settings.role || "Front-End Júnior"}. Aberto a posições
-            full-time, estágio, freelance e projetos colaborativos. Respondo rápido.
+            Estou em busca da minha primeira oportunidade como {settings.role || "Front-End Júnior"}
+            . Aberto a posições full-time, estágio, freelance e projetos colaborativos. Respondo
+            rápido.
           </p>
           <div className="mt-10 space-y-3">
             {socialLinks.map(({ Icon, label, href }) => (
@@ -95,7 +113,9 @@ export function Contact() {
               </a>
             ))}
             {socialLinks.length === 0 && (
-              <p className="text-sm text-muted-foreground">Configure suas redes no painel admin em Configuracoes.</p>
+              <p className="text-sm text-muted-foreground">
+                Configure suas redes no painel admin em Configuracoes.
+              </p>
             )}
           </div>
         </div>
@@ -157,9 +177,21 @@ export function Contact() {
             data-cursor="hover"
             className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-full bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs hover:glow-neon transition-shadow disabled:opacity-60 min-h-11"
           >
-            {isLoading && (<><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Enviando…</>)}
-            {isSuccess && (<><CheckCircle2 className="size-4" aria-hidden="true" /> Enviado!</>)}
-            {!isLoading && !isSuccess && (<>Enviar <Send className="size-4" aria-hidden="true" /></>)}
+            {isLoading && (
+              <>
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" /> Enviando…
+              </>
+            )}
+            {isSuccess && (
+              <>
+                <CheckCircle2 className="size-4" aria-hidden="true" /> Enviado!
+              </>
+            )}
+            {!isLoading && !isSuccess && (
+              <>
+                Enviar <Send className="size-4" aria-hidden="true" />
+              </>
+            )}
           </button>
         </motion.form>
       </div>
@@ -168,7 +200,13 @@ export function Contact() {
 }
 
 function Field({
-  id, label, type, value, onChange, error, autoComplete,
+  id,
+  label,
+  type,
+  value,
+  onChange,
+  error,
+  autoComplete,
 }: {
   id: string;
   label: string;
@@ -180,7 +218,10 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={id} className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
+      <label
+        htmlFor={id}
+        className="block text-[10px] uppercase tracking-widest text-muted-foreground mb-2"
+      >
         {label}
       </label>
       <input

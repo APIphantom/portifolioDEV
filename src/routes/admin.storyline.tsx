@@ -23,7 +23,9 @@ import {
 } from "@/lib/storyline-store";
 
 export const Route = createFileRoute("/admin/storyline")({
-  head: () => ({ meta: [{ title: "Storyline // Workspace" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [{ title: "Storyline // Workspace" }, { name: "robots", content: "noindex" }],
+  }),
   component: AdminStoryline,
 });
 
