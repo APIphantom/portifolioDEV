@@ -32,7 +32,9 @@ function AdminHome() {
         className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6"
       >
         <div>
-          <div className="text-[10px] uppercase tracking-[0.3em] text-primary mb-2">// Workspace</div>
+          <div className="text-[10px] uppercase tracking-[0.3em] text-primary mb-2">
+            // Workspace
+          </div>
           <h1 className="text-4xl lg:text-5xl font-black tracking-tight">
             Olá, {settings.name} <span className="inline-block">👋</span>
           </h1>
@@ -74,7 +76,9 @@ function AdminHome() {
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">{c.label}</div>
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
+                    {c.label}
+                  </div>
                   <div className="text-5xl font-black tracking-tight">{c.value}</div>
                 </div>
                 <c.icon className="size-5 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -87,8 +91,12 @@ function AdminHome() {
 
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm uppercase tracking-widest text-muted-foreground">Projetos recentes</h2>
-          <Link to="/admin/projetos" className="text-xs text-primary hover:underline">Ver todos →</Link>
+          <h2 className="text-sm uppercase tracking-widest text-muted-foreground">
+            Projetos recentes
+          </h2>
+          <Link to="/admin/projetos" className="text-xs text-primary hover:underline">
+            Ver todos →
+          </Link>
         </div>
         <div className="rounded-2xl border border-border bg-card/30 backdrop-blur-xl divide-y divide-border">
           {recent.map((p) => (
@@ -108,13 +116,17 @@ function AdminHome() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-bold truncate">{p.title}</div>
-                <div className="text-xs text-muted-foreground truncate">{p.tech.slice(0, 4).join(" · ")}</div>
+                <div className="text-xs text-muted-foreground truncate">
+                  {p.tech.slice(0, 4).join(" · ")}
+                </div>
               </div>
               <StatusPill status={p.publication?.status ?? "draft"} />
             </Link>
           ))}
           {recent.length === 0 && (
-            <div className="p-10 text-center text-sm text-muted-foreground">Nenhum projeto ainda. Crie o primeiro drop.</div>
+            <div className="p-10 text-center text-sm text-muted-foreground">
+              Nenhum projeto ainda. Crie o primeiro drop.
+            </div>
           )}
         </div>
       </section>
@@ -128,9 +140,15 @@ function StatusPill({ status }: { status: string }) {
     draft: "bg-amber-500/10 text-amber-400 border-amber-500/20",
     archived: "bg-muted text-muted-foreground border-border",
   };
-  const label: Record<string, string> = { published: "Publicado", draft: "Rascunho", archived: "Arquivado" };
+  const label: Record<string, string> = {
+    published: "Publicado",
+    draft: "Rascunho",
+    archived: "Arquivado",
+  };
   return (
-    <span className={`px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-widest ${map[status] ?? map.draft}`}>
+    <span
+      className={`px-2 py-0.5 rounded-full border text-[10px] uppercase tracking-widest ${map[status] ?? map.draft}`}
+    >
       {label[status] ?? status}
     </span>
   );

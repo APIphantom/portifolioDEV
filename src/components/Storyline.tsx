@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState } from "react";
+import { useRef, useMemo, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, useSpring, useMotionValueEvent } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { useStoryline, STORYLINE_ICONS, type StorylineItem } from "@/lib/storyline-store";
@@ -14,16 +14,25 @@ export function Storyline({ items: itemsProp }: Props) {
   const containerRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const sorted = useMemo(
     () => [...items].filter((i) => i.active).sort((a, b) => a.order - b.order),
     [items],
   );
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
+  const { scrollYProgress } = useScroll(
+    mounted
+      ? {
+          target: containerRef,
+          offset: ["start start", "end end"],
+        }
+      : undefined,
+  );
 
   const xRaw = useTransform(scrollYProgress, [0, 1], ["2%", "-82%"]);
   const x = useSpring(xRaw, { stiffness: 80, damping: 22, mass: 0.4 });
@@ -36,8 +45,6 @@ export function Storyline({ items: itemsProp }: Props) {
     const idx = Math.min(sorted.length - 1, Math.max(0, Math.round(v * (sorted.length - 1))));
     if (idx !== activeIdx) setActiveIdx(idx);
   });
-
-  if (sorted.length === 0) return null;
 
   return (
     <section
@@ -60,8 +67,8 @@ export function Storyline({ items: itemsProp }: Props) {
                 através do <span className="text-primary text-glow">código.</span>
               </h2>
               <p className="mt-6 max-w-xl text-muted-foreground">
-                Cada projeto, tecnologia e aprendizado construiu a forma como desenvolvo
-                interfaces hoje.
+                Cada projeto, tecnologia e aprendizado construiu a forma como desenvolvo interfaces
+                hoje.
               </p>
             </div>
 
@@ -117,13 +124,13 @@ export function Storyline({ items: itemsProp }: Props) {
                 <motion.article
                   key={item.id}
                   animate={{
-                    scale: isActive ? 1.03 : 0.92,
+                    scale: isActive ? 1.01 : 0.94,
                     opacity: isActive ? 1 : 0.45,
                     filter: isActive ? "blur(0px)" : "blur(2px)",
                   }}
-                  whileHover={{ scale: isActive ? 1.05 : 0.96 }}
+                  whileHover={{ scale: isActive ? 1.02 : 0.97 }}
                   transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                  className="relative shrink-0 w-[78vw] sm:w-[52vw] md:w-[40vw] lg:w-[28vw] xl:w-[24vw] aspect-[4/5] rounded-2xl border border-border bg-card p-8 flex flex-col justify-between overflow-hidden group"
+                  className="relative shrink-0 w-[84vw] sm:w-[60vw] md:w-[44vw] lg:w-[30vw] xl:w-[26vw] 2xl:w-[22vw] h-[360px] sm:h-[390px] md:h-[420px] rounded-2xl border border-border bg-card p-6 md:p-7 flex flex-col overflow-hidden group"
                   style={{
                     boxShadow: isActive
                       ? "0 0 0 1px var(--primary), 0 0 60px rgba(var(--glow-color), 0.18)"
@@ -137,29 +144,31 @@ export function Storyline({ items: itemsProp }: Props) {
                     className="absolute -top-20 -right-20 size-64 rounded-full bg-primary/20 blur-3xl pointer-events-none"
                   />
 
-                  <div className="relative flex items-start justify-between">
+                  <div className="relative flex items-start justify-between shrink-0">
                     <div>
                       <div className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
                         // {String(item.order).padStart(2, "0")}
                       </div>
-                      <div className="display text-5xl mt-2 text-primary">{item.year}</div>
+                      <div className="display text-4xl md:text-5xl mt-2 text-primary">
+                        {item.year}
+                      </div>
                     </div>
                     <div className="size-12 rounded-xl border border-border flex items-center justify-center bg-background/50 group-hover:border-primary transition-colors">
                       <Icon className="size-5 text-primary" />
                     </div>
                   </div>
 
-                  <div className="relative">
+                  <div className="relative mt-4 flex-1 min-h-0 overflow-y-auto pr-1">
                     {item.badge && (
                       <span className="inline-block text-[10px] uppercase tracking-[0.3em] px-2 py-1 border border-primary/40 text-primary rounded-full mb-4">
                         {item.badge}
                       </span>
                     )}
-                    <h3 className="display text-3xl leading-tight">{item.title}</h3>
+                    <h3 className="display text-2xl md:text-3xl leading-tight">{item.title}</h3>
                     {item.subtitle && (
                       <p className="text-sm text-primary/80 mt-1">{item.subtitle}</p>
                     )}
-                    <p className="text-sm text-muted-foreground mt-4 leading-relaxed">
+                    <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
                       {item.description}
                     </p>
                   </div>
@@ -173,6 +182,11 @@ export function Storyline({ items: itemsProp }: Props) {
                 </motion.article>
               );
             })}
+            {sorted.length === 0 && (
+              <div className="w-full rounded-2xl border border-dashed border-border bg-card/40 p-8 text-center text-sm text-muted-foreground">
+                Nenhum marco da timeline cadastrado.
+              </div>
+            )}
           </motion.div>
 
           <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent" />
@@ -182,7 +196,8 @@ export function Storyline({ items: itemsProp }: Props) {
         <div className="px-6 lg:px-10 pb-6 mx-auto max-w-7xl w-full flex items-center justify-between text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
           <span>Scroll ↓ para avançar</span>
           <span className="font-mono">
-            {String(activeIdx + 1).padStart(2, "0")} / {String(sorted.length).padStart(2, "0")}
+            {String(Math.min(activeIdx + 1, Math.max(sorted.length, 1))).padStart(2, "0")} /{" "}
+            {String(Math.max(sorted.length, 1)).padStart(2, "0")}
           </span>
         </div>
       </div>

@@ -1,12 +1,27 @@
-import { useCallback } from "react";
-import { useQuery, useMutation, useQueryClient, useQueryClient as useQc } from "@tanstack/react-query";
+import { useCallback, useMemo } from "react";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useQueryClient as useQc,
+} from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
-  listProjects, upsertProject, deleteProject, duplicateProjectFn,
-  listTechnologies, upsertTechnology, deleteTechnology,
-  listMedia, uploadMedia, deleteMedia,
-  getSettings, updateSettings,
+  listProjects,
+  upsertProject,
+  deleteProject,
+  duplicateProjectFn,
+  listTechnologies,
+  upsertTechnology,
+  deleteTechnology,
+  listMedia,
+  listProjectMedia,
+  uploadMedia,
+  deleteMedia,
+  getSettings,
+  updateSettings,
 } from "./portfolio.functions";
+import type { MediaUpload, ProjectMedia } from "./media-types";
 
 /* ============ TIPOS (mantidos da versão antiga) ============ */
 export type ProjectCategory = "web" | "ui" | "ecommerce" | "experiment" | "mobile";
@@ -49,6 +64,25 @@ export type Publication = {
   featured?: boolean;
 };
 
+export type CaseStudy = {
+  problemStatement?: string;
+  roles?: string[];
+  architecture?: string;
+  systemFlow?: string;
+  features?: string[];
+  technicalChallenges?: string[];
+  technicalDecisions?: string[];
+  databaseStructure?: string;
+  timeline?: string[];
+  developmentProcess?: string[];
+  roadmapDone?: string[];
+  roadmapInProgress?: string[];
+  roadmapPlanned?: string[];
+  learnings?: string[];
+  performance?: Metric[];
+  codeNumbers?: Metric[];
+};
+
 export type Project = {
   id: string;
   slug: string;
@@ -59,6 +93,7 @@ export type Project = {
   heroImage?: string;
   heroVideo?: string;
   gallery?: string[];
+  galleryLabels?: string[];
   desktopMockup?: string;
   tabletMockup?: string;
   mobileMockup?: string;
@@ -76,6 +111,7 @@ export type Project = {
   metrics?: Metric[];
   seo?: SEO;
   publication?: Publication;
+  caseStudy?: CaseStudy;
   client?: string;
   year?: string;
   duration?: string;
@@ -116,40 +152,55 @@ export function useProjects() {
   const dup = useServerFn(duplicateProjectFn);
 
   const q = useQuery({ queryKey: ["projects"], queryFn: () => list(), staleTime: 30_000 });
-  const projects = (q.data ?? []) as Project[];
+  const projects = useMemo(() => (q.data ?? []) as Project[], [q.data]);
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["projects"] });
 
-  const mUpsert = useMutation({ mutationFn: (p: any) => upsert({ data: p }), onSuccess: invalidate });
-  const mDel = useMutation({ mutationFn: (id: string) => del({ data: { id } }), onSuccess: invalidate });
-  const mDup = useMutation({ mutationFn: (id: string) => dup({ data: { id } }), onSuccess: invalidate });
+  const mUpsert = useMutation({
+    mutationFn: (p: Omit<Project, "id"> & { id?: string }) => upsert({ data: p }),
+    onSuccess: invalidate,
+  });
+  const mDel = useMutation({
+    mutationFn: (id: string) => del({ data: { id } }),
+    onSuccess: invalidate,
+  });
+  const mDup = useMutation({
+    mutationFn: (id: string) => dup({ data: { id } }),
+    onSuccess: invalidate,
+  });
 
-  const addProject = useCallback((p: Omit<Project, "id" | "slug"> & { slug?: string }) => {
-    const slug = p.slug || slugify(p.title) || uid().slice(0, 8);
-    mUpsert.mutate({ ...p, slug });
-  }, [mUpsert]);
+  const addProject = useCallback(
+    async (p: Omit<Project, "id" | "slug"> & { slug?: string }) => {
+      const slug = p.slug || slugify(p.title) || uid().slice(0, 8);
+      await mUpsert.mutateAsync({ ...p, slug });
+    },
+    [mUpsert],
+  );
 
-  const updateProject = useCallback((id: string, patch: Partial<Project>) => {
-    const current = projects.find((x) => x.id === id);
-    mUpsert.mutate({ ...current, ...patch, id });
-  }, [mUpsert, projects]);
+  const updateProject = useCallback(
+    async (id: string, patch: Partial<Project>) => {
+      const current = projects.find((x) => x.id === id);
+      if (!current) throw new Error("Projeto não encontrado para atualização");
+      await mUpsert.mutateAsync({ ...current, ...patch, id });
+    },
+    [mUpsert, projects],
+  );
 
   const removeProject = useCallback((id: string) => mDel.mutate(id), [mDel]);
   const duplicateProject = useCallback((id: string) => mDup.mutate(id), [mDup]);
 
-  return { projects, addProject, updateProject, removeProject, duplicateProject, loaded: !q.isPending };
+  return {
+    projects,
+    addProject,
+    updateProject,
+    removeProject,
+    duplicateProject,
+    loaded: !q.isPending,
+  };
 }
 
 /* ============ MEDIA ============ */
-export type MediaItem = {
-  id: string;
-  name: string;
-  url: string;
-  type: string;
-  size: number;
-  folder?: string;
-  createdAt: string;
-};
+export type MediaItem = ProjectMedia;
 
 async function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -176,7 +227,7 @@ export function useMedia() {
   const invalidate = () => qc.invalidateQueries({ queryKey: ["media"] });
 
   const mUp = useMutation({
-    mutationFn: async (m: { name: string; type: string; size: number; file?: File; url?: string; folder?: string }) => {
+    mutationFn: async (m: MediaUpload) => {
       // Compat: se vier `file`, envia para Storage. Se vier `url` (data URI), extrai base64.
       let dataBase64 = "";
       if (m.file) dataBase64 = await fileToBase64(m.file);
@@ -186,19 +237,51 @@ export function useMedia() {
       } else {
         throw new Error("Upload precisa de arquivo ou data URI");
       }
-      return up({ data: { name: m.name, type: m.type, size: m.size, dataBase64, folder: m.folder ?? "" } });
+      return up({
+        data: {
+          name: m.name,
+          type: m.type,
+          size: m.size,
+          dataBase64,
+          folder: m.folder ?? "",
+          projectId: m.projectId,
+          category: m.category,
+          alt: m.alt,
+          caption: m.caption,
+          sortOrder: m.sortOrder,
+          width: m.width,
+          height: m.height,
+          duration: m.duration,
+        },
+      });
     },
+    onSuccess: invalidate,
+    retry: 2,
+  });
+
+  const mDel = useMutation({
+    mutationFn: (id: string) => del({ data: { id } }),
     onSuccess: invalidate,
   });
 
-  const mDel = useMutation({ mutationFn: (id: string) => del({ data: { id } }), onSuccess: invalidate });
-
-  const add = useCallback((m: Omit<MediaItem, "id" | "createdAt"> & { file?: File }) => {
-    mUp.mutate({ name: m.name, type: m.type, size: m.size, file: m.file, url: m.url, folder: m.folder });
-  }, [mUp]);
+  const add = useCallback((m: MediaUpload) => mUp.mutate(m), [mUp]);
+  const addAsync = useCallback((m: MediaUpload) => mUp.mutateAsync(m), [mUp]);
   const remove = useCallback((id: string) => mDel.mutate(id), [mDel]);
 
-  return { items, add, remove, uploading: mUp.isPending };
+  return { items, add, addAsync, remove, uploading: mUp.isPending, uploadError: mUp.error };
+}
+
+export function useProjectMedia(projectId?: string, category?: string) {
+  const list = useServerFn(listProjectMedia);
+  const enabled = Boolean(projectId);
+  const q = useQuery({
+    queryKey: ["media", "project", projectId, category ?? "all"],
+    queryFn: () => list({ data: { projectId: projectId as string, category } }),
+    staleTime: 30_000,
+    enabled,
+  });
+
+  return { items: (q.data ?? []) as MediaItem[], loading: q.isPending };
 }
 
 /* ============ TECHNOLOGIES ============ */
@@ -218,17 +301,27 @@ export function useTechnologies() {
   const del = useServerFn(deleteTechnology);
 
   const q = useQuery({ queryKey: ["technologies"], queryFn: () => list(), staleTime: 30_000 });
-  const items = (q.data ?? []) as Technology[];
+  const items = useMemo(() => (q.data ?? []) as Technology[], [q.data]);
   const invalidate = () => qc.invalidateQueries({ queryKey: ["technologies"] });
 
-  const mUp = useMutation({ mutationFn: (t: any) => ups({ data: t }), onSuccess: invalidate });
-  const mDel = useMutation({ mutationFn: (id: string) => del({ data: { id } }), onSuccess: invalidate });
+  const mUp = useMutation({
+    mutationFn: (t: Omit<Technology, "id"> & { id?: string }) => ups({ data: t }),
+    onSuccess: invalidate,
+  });
+  const mDel = useMutation({
+    mutationFn: (id: string) => del({ data: { id } }),
+    onSuccess: invalidate,
+  });
 
   const add = useCallback((t: Omit<Technology, "id">) => mUp.mutate(t), [mUp]);
-  const update = useCallback((id: string, patch: Partial<Technology>) => {
-    const cur = items.find((x) => x.id === id);
-    mUp.mutate({ ...cur, ...patch, id });
-  }, [mUp, items]);
+  const update = useCallback(
+    (id: string, patch: Partial<Technology>) => {
+      const cur = items.find((x) => x.id === id);
+      if (!cur) return;
+      mUp.mutate({ ...cur, ...patch, id });
+    },
+    [mUp, items],
+  );
   const remove = useCallback((id: string) => mDel.mutate(id), [mDel]);
 
   return { items, add, update, remove };
@@ -241,6 +334,7 @@ export type Settings = {
   bio: string;
   email: string;
   location: string;
+  cvUrl: string;
   github: string;
   linkedin: string;
   twitter: string;
@@ -256,8 +350,13 @@ const settingsDefaults: Settings = {
   bio: "",
   email: "",
   location: "Brasil",
-  github: "", linkedin: "", twitter: "", instagram: "",
-  githubUsername: "", githubToken: "",
+  cvUrl: "/cv-adriano-oliveira.pdf",
+  github: "",
+  linkedin: "",
+  twitter: "",
+  instagram: "",
+  githubUsername: "",
+  githubToken: "",
 };
 
 export function useSettings() {
@@ -270,7 +369,9 @@ export function useSettings() {
 
   const mUpd = useMutation({
     mutationFn: (patch: Partial<Settings>) => upd({ data: patch }),
-    onSuccess: (data) => { qc.setQueryData(["settings"], data); },
+    onSuccess: (data) => {
+      qc.setQueryData(["settings"], data);
+    },
   });
 
   const update = useCallback((patch: Partial<Settings>) => mUpd.mutate(patch), [mUpd]);

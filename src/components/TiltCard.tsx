@@ -20,7 +20,10 @@ export function TiltCard({ children, className }: { children: ReactNode; classNa
         mx.set((e.clientX - r.left) / r.width);
         my.set((e.clientY - r.top) / r.height);
       }}
-      onMouseLeave={() => { mx.set(0.5); my.set(0.5); }}
+      onMouseLeave={() => {
+        mx.set(0.5);
+        my.set(0.5);
+      }}
       className={className}
     >
       {children}

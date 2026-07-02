@@ -15,7 +15,6 @@ import { RouteProgress } from "@/components/RouteProgress";
 
 import appCss from "../styles.css?url";
 
-
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -79,7 +78,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Adriano Oliveira — Desenvolvedor Front-End Júnior" },
-      { name: "description", content: "Portfólio de Adriano Oliveira — Desenvolvedor Front-End Júnior em React, Next.js, TypeScript e Tailwind." },
+      {
+        name: "description",
+        content:
+          "Portfólio de Adriano Oliveira — Desenvolvedor Front-End Júnior em React, Next.js, TypeScript e Tailwind.",
+      },
       { name: "author", content: "Adriano Oliveira" },
       { property: "og:site_name", content: "Adriano Oliveira — Portfólio" },
       { property: "og:type", content: "website" },
@@ -87,21 +90,33 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/png", href: "/web-icon.png" },
+      { rel: "apple-touch-icon", href: "/web-icon.png" },
+      { rel: "manifest", href: "/site.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "dns-prefetch", href: "https://api.github.com" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,900&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,900&display=swap",
+      },
     ],
-    scripts: [{
-      type: "application/ld+json",
-      children: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        name: "Adriano Oliveira — Portfólio",
-        url: "/",
-        author: { "@type": "Person", name: "Adriano Oliveira", jobTitle: "Desenvolvedor Front-End Júnior" },
-      }),
-    }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Adriano Oliveira — Portfólio",
+          url: "/",
+          author: {
+            "@type": "Person",
+            name: "Adriano Oliveira",
+            jobTitle: "Desenvolvedor Front-End Júnior",
+          },
+        }),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -133,8 +148,17 @@ function RootComponent() {
       <CustomCursor />
       <RouteProgress />
       <PageTransition />
-      <Toaster theme="dark" position="bottom-center" toastOptions={{ style: { background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" } }} />
+      <Toaster
+        theme="dark"
+        position="bottom-center"
+        toastOptions={{
+          style: {
+            background: "var(--card)",
+            border: "1px solid var(--border)",
+            color: "var(--foreground)",
+          },
+        }}
+      />
     </QueryClientProvider>
   );
 }
-

@@ -1,4 +1,4 @@
-import { useState, type ImgHTMLAttributes } from "react";
+import { useEffect, useRef, useState, type ImgHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 type Props = ImgHTMLAttributes<HTMLImageElement> & {
@@ -27,6 +27,14 @@ export function LazyImage({
   ...rest
 }: Props) {
   const [loaded, setLoaded] = useState(false);
+  const imageRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    const image = imageRef.current;
+    if (image?.complete && image.naturalWidth > 0) {
+      setLoaded(true);
+    }
+  }, [src]);
 
   return (
     <div
@@ -42,6 +50,7 @@ export function LazyImage({
       />
       {src ? (
         <img
+          ref={imageRef}
           src={src}
           alt={alt}
           loading={priority ? "eager" : "lazy"}

@@ -20,6 +20,7 @@ import { Route as AdminStorylineRouteImport } from './routes/admin.storyline'
 import { Route as AdminProjetosRouteImport } from './routes/admin.projetos'
 import { Route as AdminMidiasRouteImport } from './routes/admin.midias'
 import { Route as AdminGithubRouteImport } from './routes/admin.github'
+import { Route as AdminCurriculosRouteImport } from './routes/admin.curriculos'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configuracoes'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -77,6 +78,11 @@ const AdminGithubRoute = AdminGithubRouteImport.update({
   path: '/github',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCurriculosRoute = AdminCurriculosRouteImport.update({
+  id: '/curriculos',
+  path: '/curriculos',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminConfiguracoesRoute = AdminConfiguracoesRouteImport.update({
   id: '/configuracoes',
   path: '/configuracoes',
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
+  '/admin/curriculos': typeof AdminCurriculosRoute
   '/admin/github': typeof AdminGithubRoute
   '/admin/midias': typeof AdminMidiasRoute
   '/admin/projetos': typeof AdminProjetosRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
+  '/admin/curriculos': typeof AdminCurriculosRoute
   '/admin/github': typeof AdminGithubRoute
   '/admin/midias': typeof AdminMidiasRoute
   '/admin/projetos': typeof AdminProjetosRoute
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
+  '/admin/curriculos': typeof AdminCurriculosRoute
   '/admin/github': typeof AdminGithubRoute
   '/admin/midias': typeof AdminMidiasRoute
   '/admin/projetos': typeof AdminProjetosRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sitemap.xml'
     | '/admin/configuracoes'
+    | '/admin/curriculos'
     | '/admin/github'
     | '/admin/midias'
     | '/admin/projetos'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sitemap.xml'
     | '/admin/configuracoes'
+    | '/admin/curriculos'
     | '/admin/github'
     | '/admin/midias'
     | '/admin/projetos'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sitemap.xml'
     | '/admin/configuracoes'
+    | '/admin/curriculos'
     | '/admin/github'
     | '/admin/midias'
     | '/admin/projetos'
@@ -256,6 +268,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminGithubRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/curriculos': {
+      id: '/admin/curriculos'
+      path: '/curriculos'
+      fullPath: '/admin/curriculos'
+      preLoaderRoute: typeof AdminCurriculosRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/configuracoes': {
       id: '/admin/configuracoes'
       path: '/configuracoes'
@@ -268,6 +287,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
+  AdminCurriculosRoute: typeof AdminCurriculosRoute
   AdminGithubRoute: typeof AdminGithubRoute
   AdminMidiasRoute: typeof AdminMidiasRoute
   AdminProjetosRoute: typeof AdminProjetosRoute
@@ -278,6 +298,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
+  AdminCurriculosRoute: AdminCurriculosRoute,
   AdminGithubRoute: AdminGithubRoute,
   AdminMidiasRoute: AdminMidiasRoute,
   AdminProjetosRoute: AdminProjetosRoute,
@@ -298,3 +319,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

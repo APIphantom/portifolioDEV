@@ -23,7 +23,10 @@ export function MagneticButton({ children, strength = 0.35, className, ...rest }
         x.set((e.clientX - (r.left + r.width / 2)) * strength);
         y.set((e.clientY - (r.top + r.height / 2)) * strength);
       }}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
+      onMouseLeave={() => {
+        x.set(0);
+        y.set(0);
+      }}
       className={className}
       {...(rest as any)}
     >

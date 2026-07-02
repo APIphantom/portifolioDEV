@@ -1,81 +1,25 @@
-import { motion, useInView, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useEffect, useRef, useMemo } from "react";
-
-type SkillLevel = "Em estudo" | "Confortável" | "Sólido";
-
-interface Skill {
-  name: string;
-  level: number;
-  label: SkillLevel;
-}
-
-interface SkillCategory {
-  id: string;
-  title: string;
-  caption: string;
-  skills: Skill[];
-}
-
-const categories: SkillCategory[] = [
-  {
-    id: "frontend",
-    title: "Front-End",
-    caption: "Stack principal do meu dia a dia",
-    skills: [
-      { name: "React", level: 85, label: "Sólido" },
-      { name: "JavaScript", level: 88, label: "Sólido" },
-      { name: "TypeScript", level: 75, label: "Confortável" },
-      { name: "Next.js", level: 70, label: "Confortável" },
-      { name: "Tailwind CSS", level: 90, label: "Sólido" },
-      { name: "HTML5 & CSS3", level: 92, label: "Sólido" },
-    ],
-  },
-  {
-    id: "tools",
-    title: "Ferramentas",
-    caption: "Fluxo de trabalho e versionamento",
-    skills: [
-      { name: "Git", level: 82, label: "Sólido" },
-      { name: "GitHub", level: 85, label: "Sólido" },
-      { name: "Figma", level: 75, label: "Confortável" },
-      { name: "Vite", level: 80, label: "Sólido" },
-      { name: "Vercel", level: 78, label: "Confortável" },
-      { name: "REST APIs", level: 78, label: "Confortável" },
-    ],
-  },
-  {
-    id: "learning",
-    title: "Em Evolução",
-    caption: "Tecnologias que estudo agora",
-    skills: [
-      { name: "Node.js", level: 55, label: "Em estudo" },
-      { name: "Supabase", level: 50, label: "Em estudo" },
-      { name: "PostgreSQL", level: 45, label: "Em estudo" },
-      { name: "FastAPI", level: 35, label: "Em estudo" },
-      { name: "Docker", level: 30, label: "Em estudo" },
-      { name: "CI/CD", level: 35, label: "Em estudo" },
-    ],
-  },
-];
-
-function Counter({ to }: { to: number }) {
-  const mv = useMotionValue(0);
-  const spring = useSpring(mv, { stiffness: 60, damping: 18 });
-  const rounded = useTransform(spring, (v) => Math.round(v));
-  const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-
-  useEffect(() => { if (inView) mv.set(to); }, [inView, to, mv]);
-  useEffect(
-    () => rounded.on("change", (v) => { if (ref.current) ref.current.textContent = `${v}%`; }),
-    [rounded],
-  );
-
-  return <span ref={ref} className="text-primary font-black tabular-nums" aria-label={`Nível: ${to}%`}>0%</span>;
-}
+import { motion } from "framer-motion";
+import { useMemo } from "react";
+import { useTechnologies } from "@/lib/projects-store";
 
 export function Skills() {
-  const allSkills = useMemo(() => categories.flatMap((c) => c.skills), []);
+  const { items } = useTechnologies();
+
+  const groups = useMemo(() => {
+    const map = new Map<string, typeof items>();
+    for (const tech of items) {
+      const category = (tech.category?.trim() || "Outras").toUpperCase();
+      const list = map.get(category) ?? [];
+      list.push(tech);
+      map.set(category, list);
+    }
+    return Array.from(map.entries())
+      .map(([title, technologies]) => ({
+        title,
+        technologies: [...technologies].sort((a, b) => a.name.localeCompare(b.name)),
+      }))
+      .sort((a, b) => a.title.localeCompare(b.title));
+  }, [items]);
 
   return (
     <section
@@ -87,7 +31,9 @@ export function Skills() {
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
           <div>
-            <div className="text-xs uppercase tracking-[0.3em] text-primary mb-4">// 02 — Stack</div>
+            <div className="text-xs uppercase tracking-[0.3em] text-primary mb-4">
+              // 02 — Stack
+            </div>
             <h2 id="skills-title" className="display text-5xl md:text-7xl">
               Meu <span className="text-primary">arsenal</span>
               <br />
@@ -95,8 +41,7 @@ export function Skills() {
             </h2>
           </div>
           <p className="max-w-md text-muted-foreground">
-            Ferramentas que uso no dia a dia, organizadas por categoria.
-            Os percentuais refletem minha autoavaliação — sempre aprendendo mais.
+            Tecnologias carregadas diretamente do painel admin no Supabase, agrupadas por categoria.
           </p>
         </div>
 
@@ -112,21 +57,20 @@ export function Skills() {
         </div>
 
         <div className="space-y-12">
-          {categories.map((cat) => (
-            <div key={cat.id}>
+          {groups.map((cat) => (
+            <div key={cat.title}>
               <div className="flex items-baseline justify-between mb-5 flex-wrap gap-2">
                 <h3 className="text-2xl md:text-3xl font-black tracking-tight">
                   {cat.title}
                   <span className="text-primary">.</span>
                 </h3>
                 <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                  {cat.caption}
+                  {cat.technologies.length} tecnologias
                 </p>
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-                {cat.skills.map((s, i) => {
-                  const globalIdx = allSkills.findIndex((x) => x.name === s.name);
+                {cat.technologies.map((s, i) => {
                   return (
                     <motion.div
                       key={s.name}
@@ -136,34 +80,46 @@ export function Skills() {
                       transition={{ delay: i * 0.05 }}
                       className="group p-6 rounded-2xl border border-border bg-card relative overflow-hidden hover:border-primary/60 hover:glow-neon transition-all"
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
-                      <div className="relative flex items-baseline justify-between mb-3">
+                      <div
+                        className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-hidden="true"
+                      />
+                      <div className="relative flex items-baseline justify-between mb-3 gap-4">
                         <div className="flex items-center gap-3">
                           <span className="text-xs text-muted-foreground tabular-nums font-mono">
-                            {String(globalIdx + 1).padStart(2, "0")}
+                            {String(i + 1).padStart(2, "0")}
                           </span>
                           <span className="text-xl font-bold tracking-tight">{s.name}</span>
                         </div>
-                        <Counter to={s.level} />
+                        {s.color && (
+                          <span
+                            className="size-3 rounded-full border border-border"
+                            style={{ backgroundColor: s.color }}
+                            aria-label={`Cor ${s.color}`}
+                          />
+                        )}
                       </div>
                       <div className="relative flex items-center justify-between mb-3">
                         <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                          {s.label}
+                          {cat.title}
                         </span>
+                        {s.url && (
+                          <a
+                            href={s.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[10px] uppercase tracking-widest text-primary hover:underline"
+                          >
+                            Referencia
+                          </a>
+                        )}
                       </div>
-                      <div
-                        className="relative h-1.5 bg-muted rounded-full overflow-hidden"
-                        role="progressbar"
-                        aria-valuenow={s.level}
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        aria-label={`${s.name} — ${s.level}%`}
-                      >
+                      <div className="relative h-1.5 bg-muted rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
-                          whileInView={{ width: `${s.level}%` }}
+                          whileInView={{ width: "100%" }}
                           viewport={{ once: true }}
-                          transition={{ duration: 1.2, delay: 0.2 + i * 0.05, ease: "easeOut" }}
+                          transition={{ duration: 0.7, delay: 0.1 + i * 0.04, ease: "easeOut" }}
                           className="h-full bg-primary group-hover:shadow-[0_0_20px_rgba(var(--glow-color),0.7)] transition-shadow"
                         />
                       </div>
@@ -173,6 +129,11 @@ export function Skills() {
               </div>
             </div>
           ))}
+          {groups.length === 0 && (
+            <div className="text-center py-16 border border-dashed border-border rounded-2xl text-muted-foreground">
+              Nenhuma tecnologia cadastrada no painel admin.
+            </div>
+          )}
         </div>
       </div>
     </section>

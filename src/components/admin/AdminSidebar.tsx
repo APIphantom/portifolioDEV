@@ -1,6 +1,17 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { LayoutGrid, FolderKanban, Image as ImageIcon, Cpu, Github, Settings as SettingsIcon, LogOut, ExternalLink, Milestone } from "lucide-react";
+import {
+  LayoutGrid,
+  FolderKanban,
+  Image as ImageIcon,
+  Cpu,
+  Github,
+  FileText,
+  Settings as SettingsIcon,
+  LogOut,
+  ExternalLink,
+  Milestone,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -10,13 +21,12 @@ const items = [
   { to: "/admin/projetos", label: "Projetos", icon: FolderKanban },
   { to: "/admin/storyline", label: "Storyline", icon: Milestone },
   { to: "/admin/midias", label: "Mídias", icon: ImageIcon },
+  { to: "/admin/curriculos", label: "Currículos", icon: FileText },
   { to: "/admin/tecnologias", label: "Tecnologias", icon: Cpu },
   { to: "/admin/github", label: "GitHub Import", icon: Github },
 ];
 
-const footerItems = [
-  { to: "/admin/configuracoes", label: "Configurações", icon: SettingsIcon },
-];
+const footerItems = [{ to: "/admin/configuracoes", label: "Configurações", icon: SettingsIcon }];
 
 export function AdminSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -34,7 +44,6 @@ export function AdminSidebar() {
     navigate({ to: "/auth", replace: true });
   };
 
-
   return (
     <aside className="hidden lg:flex w-60 shrink-0 flex-col border-r border-border/60 bg-card/40 backdrop-blur-xl sticky top-0 h-screen">
       <div className="px-5 py-6 border-b border-border/60">
@@ -43,8 +52,10 @@ export function AdminSidebar() {
             S
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="font-black tracking-tight text-sm">STVX</span>
-            <span className="text-[9px] uppercase tracking-[0.25em] text-muted-foreground">Workspace</span>
+            <span className="font-black tracking-tight text-sm">ADRIANO DEV</span>
+            <span className="text-[9px] uppercase tracking-[0.25em] text-muted-foreground">
+              Workspace
+            </span>
           </div>
         </Link>
       </div>
@@ -86,7 +97,9 @@ export function AdminSidebar() {
               to={item.to}
               data-cursor="hover"
               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
-                active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                active
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
               }`}
             >
               <item.icon className="size-4" />

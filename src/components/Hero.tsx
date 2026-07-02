@@ -1,11 +1,18 @@
 import { motion } from "framer-motion";
 import { ArrowDown, Download, Mail } from "lucide-react";
 import { MagneticButton } from "./MagneticButton";
+import { useSettings } from "@/lib/projects-store";
 
-const TITLE_TOP = "FRONT".split("");
-const TITLE_BOT = "END".split("");
+const TITLE_TOP = "ADRIANO".split("");
+const TITLE_BOT = "DEV".split("");
 
 export function Hero() {
+  const { settings } = useSettings();
+  const displayName = settings.name || "Adriano Oliveira";
+  const role = settings.role || "Desenvolvedor Front-End Júnior";
+  const cvHref = settings.cvUrl || "/cv-adriano-oliveira.pdf";
+  const isExternalCv = /^https?:\/\//i.test(cvHref);
+
   return (
     <section
       id="home"
@@ -92,9 +99,11 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.9 }}
             className="mt-8 max-w-xl text-base md:text-lg text-muted-foreground"
           >
-            <span className="text-foreground font-medium">Sou Adriano Oliveira, Desenvolvedor Front-End Júnior.</span>{" "}
-            Transformo ideias em interfaces modernas, responsivas e acessíveis com React, Next.js,
-            TypeScript e Tailwind — focado em performance e boas práticas.
+            <span className="text-foreground font-medium">
+              Sou {displayName}, {role}.
+            </span>{" "}
+            {settings.bio ||
+              "Transformo ideias em interfaces modernas, responsivas e acessíveis com React, Next.js, TypeScript e Tailwind — focado em performance e boas práticas."}
           </motion.p>
 
           <motion.div
@@ -104,15 +113,22 @@ export function Hero() {
             className="mt-10 flex flex-wrap gap-3"
           >
             <MagneticButton
-              onClick={() => document.getElementById("projetos")?.scrollIntoView({ behavior: "smooth" })}
+              onClick={() =>
+                document.getElementById("projetos")?.scrollIntoView({ behavior: "smooth" })
+              }
               className="group inline-flex items-center gap-2 px-6 py-4 bg-primary text-primary-foreground rounded-full font-bold uppercase tracking-widest text-xs hover:glow-neon transition-all min-h-11"
             >
               Ver Projetos
-              <ArrowDown className="size-4 group-hover:translate-y-0.5 transition-transform" aria-hidden="true" />
+              <ArrowDown
+                className="size-4 group-hover:translate-y-0.5 transition-transform"
+                aria-hidden="true"
+              />
             </MagneticButton>
             <a
-              href="/cv-adriano-oliveira.pdf"
-              download
+              href={cvHref}
+              download={isExternalCv ? undefined : true}
+              target={isExternalCv ? "_blank" : undefined}
+              rel={isExternalCv ? "noreferrer" : undefined}
               data-cursor="hover"
               className="inline-flex items-center gap-2 px-6 py-4 border border-border rounded-full font-bold uppercase tracking-widest text-xs hover:border-primary hover:text-primary transition-colors min-h-11"
             >
@@ -136,7 +152,7 @@ export function Hero() {
         >
           <div className="border-l-2 border-primary pl-4">
             <div className="text-muted-foreground">Portfólio / V.2026</div>
-            <div className="text-foreground font-bold mt-1">Front-End Júnior — Em busca de oportunidade</div>
+            <div className="text-foreground font-bold mt-1">{role}</div>
           </div>
           <div className="grid grid-cols-2 gap-px bg-border rounded-lg overflow-hidden">
             {[
@@ -159,11 +175,14 @@ export function Hero() {
           {Array.from({ length: 2 }).flatMap((_, k) =>
             ["REACT", "TAILWIND", "TYPESCRIPT", "NEXT.JS", "VITE", "FIGMA", "GIT", "REST API"].map(
               (t, i) => (
-                <span key={`${k}-${i}`} className="mx-8 text-sm font-black tracking-widest text-muted-foreground">
+                <span
+                  key={`${k}-${i}`}
+                  className="mx-8 text-sm font-black tracking-widest text-muted-foreground"
+                >
                   {t} <span className="text-primary">★</span>
                 </span>
-              )
-            )
+              ),
+            ),
           )}
         </div>
       </div>

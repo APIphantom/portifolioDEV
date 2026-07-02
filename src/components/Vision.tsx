@@ -1,9 +1,17 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function Vision() {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const { scrollYProgress } = useScroll(
+    mounted ? { target: ref, offset: ["start end", "end start"] } : undefined,
+  );
   const x = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
 
   return (
